@@ -1,11 +1,20 @@
-import { Link, useLocation } from "react-router-dom";
-import { Brain } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Brain, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/context/AuthContext";
+import { Button } from "@/components/ui/button";
 
 const Header = () => {
     const location = useLocation();
+    const navigate = useNavigate();
+    const { user, logout } = useAuth();
 
     const isActive = (path) => location.pathname === path;
+
+    const handleLogout = () => {
+        logout();
+        navigate("/login");
+    };
 
     return (
         <header className="sticky top-0 z-50 w-full border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
@@ -63,6 +72,18 @@ const Header = () => {
                     >
                         About
                     </Link>
+
+                    {user && (
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={handleLogout}
+                            className="text-muted-foreground hover:text-primary gap-2"
+                        >
+                            <LogOut className="h-4 w-4" />
+                            Logout
+                        </Button>
+                    )}
                 </nav>
             </div>
         </header>

@@ -1,0 +1,175 @@
+Loading graph from C:\Users\kabhi\finalKG\data\graph.pt...
+
+--- Graph Summary ---
+HeteroData(
+  Anatomy={ num_nodes=402 },
+  Biological_Process={ num_nodes=11381 },
+  Cellular_Component={ num_nodes=1391 },
+  Compound={ num_nodes=1552 },
+  Disease={ num_nodes=137 },
+  Gene={ num_nodes=20945 },
+  Molecular_Function={ num_nodes=2884 },
+  Pathway={ num_nodes=1822 },
+  Pharmacologic_Class={ num_nodes=345 },
+  Side_Effect={ num_nodes=5734 },
+  Symptom={ num_nodes=438 },
+  (Anatomy, downregulates, Gene)={ edge_index=[2, 102240] },
+  (Gene, downregulates_rev, Anatomy)={ edge_index=[2, 102240] },
+  (Anatomy, expresses, Gene)={ edge_index=[2, 526407] },
+  (Gene, expresses_rev, Anatomy)={ edge_index=[2, 526407] },
+  (Anatomy, upregulates, Gene)={ edge_index=[2, 97848] },
+  (Gene, upregulates_rev, Anatomy)={ edge_index=[2, 97848] },
+  (Compound, binds, Gene)={ edge_index=[2, 11571] },
+  (Gene, binds_rev, Compound)={ edge_index=[2, 11571] },
+  (Compound, causes, Side_Effect)={ edge_index=[2, 138944] },
+  (Side_Effect, causes_rev, Compound)={ edge_index=[2, 138944] },
+  (Compound, downregulates, Gene)={ edge_index=[2, 21102] },
+  (Gene, downregulates_rev, Compound)={ edge_index=[2, 21102] },
+  (Compound, palliates, Disease)={ edge_index=[2, 390] },
+  (Disease, palliates_rev, Compound)={ edge_index=[2, 390] },
+  (Compound, treats, Disease)={ edge_index=[2, 755] },
+  (Disease, treats_rev, Compound)={ edge_index=[2, 755] },
+  (Compound, upregulates, Gene)={ edge_index=[2, 18756] },
+  (Gene, upregulates_rev, Compound)={ edge_index=[2, 18756] },
+  (Disease, downregulates, Gene)={ edge_index=[2, 7623] },
+  (Gene, downregulates_rev, Disease)={ edge_index=[2, 7623] },
+  (Disease, presents, Symptom)={ edge_index=[2, 3357] },
+  (Symptom, presents_rev, Disease)={ edge_index=[2, 3357] },
+  (Disease, upregulates, Gene)={ edge_index=[2, 7731] },
+  (Gene, upregulates_rev, Disease)={ edge_index=[2, 7731] },
+  (Gene, covaries, Gene)={ edge_index=[2, 61690] },
+  (Gene, covaries_rev, Gene)={ edge_index=[2, 61690] },
+  (Gene, interacts, Gene)={ edge_index=[2, 147164] },
+  (Gene, interacts_rev, Gene)={ edge_index=[2, 147164] },
+  (Gene, participates, Biological_Process)={ edge_index=[2, 559504] },
+  (Biological_Process, participates_rev, Gene)={ edge_index=[2, 559504] },
+  (Gene, participates, Cellular_Component)={ edge_index=[2, 73566] },
+  (Cellular_Component, participates_rev, Gene)={ edge_index=[2, 73566] },
+  (Gene, participates, Molecular_Function)={ edge_index=[2, 97222] },
+  (Molecular_Function, participates_rev, Gene)={ edge_index=[2, 97222] },
+  (Gene, participates, Pathway)={ edge_index=[2, 84372] },
+  (Pathway, participates_rev, Gene)={ edge_index=[2, 84372] },
+  (Gene, regulates, Gene)={ edge_index=[2, 265672] },
+  (Gene, regulates_rev, Gene)={ edge_index=[2, 265672] }
+)
+
+--- Node Types ---
+Node Type: Anatomy
+  WARNING: No features ('x') found.
+  Num nodes: 402
+Node Type: Biological_Process
+  WARNING: No features ('x') found.
+  Num nodes: 11381
+Node Type: Cellular_Component
+  WARNING: No features ('x') found.
+  Num nodes: 1391
+Node Type: Compound
+  WARNING: No features ('x') found.
+  Num nodes: 1552
+Node Type: Disease
+  WARNING: No features ('x') found.
+  Num nodes: 137
+Node Type: Gene
+  WARNING: No features ('x') found.
+  Num nodes: 20945
+Node Type: Molecular_Function
+  WARNING: No features ('x') found.
+  Num nodes: 2884
+Node Type: Pathway
+  WARNING: No features ('x') found.
+  Num nodes: 1822
+Node Type: Pharmacologic_Class
+  WARNING: No features ('x') found.
+  Num nodes: 345
+Node Type: Side_Effect
+  WARNING: No features ('x') found.
+  Num nodes: 5734
+Node Type: Symptom
+  WARNING: No features ('x') found.
+  Num nodes: 438
+
+--- Edge Types ---
+Edge Type: ('Anatomy', 'downregulates', 'Gene')
+  Edge index shape: torch.Size([2, 102240])
+Edge Type: ('Gene', 'downregulates_rev', 'Anatomy')
+  Edge index shape: torch.Size([2, 102240])
+Edge Type: ('Anatomy', 'expresses', 'Gene')
+  Edge index shape: torch.Size([2, 526407])
+Edge Type: ('Gene', 'expresses_rev', 'Anatomy')
+  Edge index shape: torch.Size([2, 526407])
+Edge Type: ('Anatomy', 'upregulates', 'Gene')
+  Edge index shape: torch.Size([2, 97848])
+Edge Type: ('Gene', 'upregulates_rev', 'Anatomy')
+  Edge index shape: torch.Size([2, 97848])
+Edge Type: ('Compound', 'binds', 'Gene')
+  Edge index shape: torch.Size([2, 11571])
+Edge Type: ('Gene', 'binds_rev', 'Compound')
+  Edge index shape: torch.Size([2, 11571])
+Edge Type: ('Compound', 'causes', 'Side_Effect')
+  Edge index shape: torch.Size([2, 138944])
+Edge Type: ('Side_Effect', 'causes_rev', 'Compound')
+  Edge index shape: torch.Size([2, 138944])
+Edge Type: ('Compound', 'downregulates', 'Gene')
+  Edge index shape: torch.Size([2, 21102])
+Edge Type: ('Gene', 'downregulates_rev', 'Compound')
+  Edge index shape: torch.Size([2, 21102])
+Edge Type: ('Compound', 'palliates', 'Disease')
+  Edge index shape: torch.Size([2, 390])
+Edge Type: ('Disease', 'palliates_rev', 'Compound')
+  Edge index shape: torch.Size([2, 390])
+Edge Type: ('Compound', 'treats', 'Disease')
+  Edge index shape: torch.Size([2, 755])
+Edge Type: ('Disease', 'treats_rev', 'Compound')
+  Edge index shape: torch.Size([2, 755])
+Edge Type: ('Compound', 'upregulates', 'Gene')
+  Edge index shape: torch.Size([2, 18756])
+Edge Type: ('Gene', 'upregulates_rev', 'Compound')
+  Edge index shape: torch.Size([2, 18756])
+Edge Type: ('Disease', 'downregulates', 'Gene')
+  Edge index shape: torch.Size([2, 7623])
+Edge Type: ('Gene', 'downregulates_rev', 'Disease')
+  Edge index shape: torch.Size([2, 7623])
+Edge Type: ('Disease', 'presents', 'Symptom')
+  Edge index shape: torch.Size([2, 3357])
+Edge Type: ('Symptom', 'presents_rev', 'Disease')
+  Edge index shape: torch.Size([2, 3357])
+Edge Type: ('Disease', 'upregulates', 'Gene')
+  Edge index shape: torch.Size([2, 7731])
+Edge Type: ('Gene', 'upregulates_rev', 'Disease')
+  Edge index shape: torch.Size([2, 7731])
+Edge Type: ('Gene', 'covaries', 'Gene')
+  Edge index shape: torch.Size([2, 61690])
+Edge Type: ('Gene', 'covaries_rev', 'Gene')
+  Edge index shape: torch.Size([2, 61690])
+Edge Type: ('Gene', 'interacts', 'Gene')
+  Edge index shape: torch.Size([2, 147164])
+Edge Type: ('Gene', 'interacts_rev', 'Gene')
+  Edge index shape: torch.Size([2, 147164])
+Edge Type: ('Gene', 'participates', 'Biological_Process')
+  Edge index shape: torch.Size([2, 559504])
+Edge Type: ('Biological_Process', 'participates_rev', 'Gene')
+  Edge index shape: torch.Size([2, 559504])
+Edge Type: ('Gene', 'participates', 'Cellular_Component')
+  Edge index shape: torch.Size([2, 73566])
+Edge Type: ('Cellular_Component', 'participates_rev', 'Gene')
+  Edge index shape: torch.Size([2, 73566])
+Edge Type: ('Gene', 'participates', 'Molecular_Function')
+  Edge index shape: torch.Size([2, 97222])
+Edge Type: ('Molecular_Function', 'participates_rev', 'Gene')
+  Edge index shape: torch.Size([2, 97222])
+Edge Type: ('Gene', 'participates', 'Pathway')
+  Edge index shape: torch.Size([2, 84372])
+Edge Type: ('Pathway', 'participates_rev', 'Gene')
+  Edge index shape: torch.Size([2, 84372])
+Edge Type: ('Gene', 'regulates', 'Gene')
+  Edge index shape: torch.Size([2, 265672])
+Edge Type: ('Gene', 'regulates_rev', 'Gene')
+  Edge index shape: torch.Size([2, 265672])
+
+--- R-GCN Compatibility Check ---
+FAIL: Missing features for node types: ['Anatomy', 'Biological_Process', 'Cellular_Component', 'Compound', 'Disease', 'Gene', 'Molecular_Function', 'Pathway', 'Pharmacologic_Class', 'Side_Effect', 'Symptom']
+  Note: R-GCN requires input features for all nodes unless you use Embedding layers for featureless nodes.
+PASS: All edge types have edge objects.
+
+--- Feature Dimension Check ---
+Feature dimensions found: {}

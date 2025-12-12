@@ -1,0 +1,54 @@
+✅ GLOBAL INTEGER INDEX VALIDATION REPORT
+========================================
+Anatomy   | 402   | [0 ... 401]
+Biological_Process | 11381 | [0 ... 11380]
+Cellular_Component | 1391  | [0 ... 1390]
+Compound  | 1552  | [0 ... 1551]
+Disease   | 137   | [0 ... 136]
+Gene      | 20945 | [0 ... 20944]
+Molecular_Function | 2884  | [0 ... 2883]
+Pathway   | 1822  | [0 ... 1821]
+Pharmacologic_Class | 345   | [0 ... 344]
+Side_Effect | 5734  | [0 ... 5733]
+Symptom   | 438   | [0 ... 437]
+----------------------------------------
+Anatomy -[downregulates]-> Gene | 385 < 402 | 20944 < 20945 | ✅ VALID
+Gene -[downregulates_rev]-> Anatomy | 20944 < 20945 | 385 < 402 | ✅ VALID
+Anatomy -[expresses]-> Gene | 401 < 402 | 20944 < 20945 | ✅ VALID
+Gene -[expresses_rev]-> Anatomy | 20944 < 20945 | 401 < 402 | ✅ VALID
+Anatomy -[upregulates]-> Gene | 385 < 402 | 20944 < 20945 | ✅ VALID
+Gene -[upregulates_rev]-> Anatomy | 20944 < 20945 | 385 < 402 | ✅ VALID
+Compound -[binds]-> Gene | 1551 < 1552 | 20928 < 20945 | ✅ VALID
+Gene -[binds_rev]-> Compound | 20928 < 20945 | 1551 < 1552 | ✅ VALID
+Compound -[causes]-> Side_Effect | 1551 < 1552 | 5733 < 5734 | ✅ VALID
+Side_Effect -[causes_rev]-> Compound | 5733 < 5734 | 1551 < 1552 | ✅ VALID
+Compound -[downregulates]-> Gene | 1551 < 1552 | 20930 < 20945 | ✅ VALID
+Gene -[downregulates_rev]-> Compound | 20930 < 20945 | 1551 < 1552 | ✅ VALID
+Compound -[palliates]-> Disease | 1550 < 1552 | 133 < 137 | ✅ VALID
+Disease -[palliates_rev]-> Compound | 133 < 137 | 1550 < 1552 | ✅ VALID
+Compound -[treats]-> Disease | 1551 < 1552 | 136 < 137 | ✅ VALID
+Disease -[treats_rev]-> Compound | 136 < 137 | 1551 < 1552 | ✅ VALID
+Compound -[upregulates]-> Gene | 1551 < 1552 | 20944 < 20945 | ✅ VALID
+Gene -[upregulates_rev]-> Compound | 20944 < 20945 | 1551 < 1552 | ✅ VALID
+Disease -[downregulates]-> Gene | 136 < 137 | 20941 < 20945 | ✅ VALID
+Gene -[downregulates_rev]-> Disease | 20941 < 20945 | 136 < 137 | ✅ VALID
+Disease -[presents]-> Symptom | 136 < 137 | 437 < 438 | ✅ VALID
+Symptom -[presents_rev]-> Disease | 437 < 438 | 136 < 137 | ✅ VALID
+Disease -[upregulates]-> Gene | 136 < 137 | 20944 < 20945 | ✅ VALID
+Gene -[upregulates_rev]-> Disease | 20944 < 20945 | 136 < 137 | ✅ VALID
+Gene -[covaries]-> Gene | 20944 < 20945 | 20944 < 20945 | ✅ VALID
+Gene -[covaries_rev]-> Gene | 20944 < 20945 | 20944 < 20945 | ✅ VALID
+Gene -[interacts]-> Gene | 20939 < 20945 | 20944 < 20945 | ✅ VALID
+Gene -[interacts_rev]-> Gene | 20944 < 20945 | 20939 < 20945 | ✅ VALID
+Gene -[participates]-> Biological_Process | 20944 < 20945 | 11380 < 11381 | ✅ VALID
+Biological_Process -[participates_rev]-> Gene | 11380 < 11381 | 20944 < 20945 | ✅ VALID
+Gene -[participates]-> Cellular_Component | 20940 < 20945 | 1390 < 1391 | ✅ VALID
+Cellular_Component -[participates_rev]-> Gene | 1390 < 1391 | 20940 < 20945 | ✅ VALID
+Gene -[participates]-> Molecular_Function | 20944 < 20945 | 2883 < 2884 | ✅ VALID
+Molecular_Function -[participates_rev]-> Gene | 2883 < 2884 | 20944 < 20945 | ✅ VALID
+Gene -[participates]-> Pathway | 20944 < 20945 | 1821 < 1822 | ✅ VALID
+Pathway -[participates_rev]-> Gene | 1821 < 1822 | 20944 < 20945 | ✅ VALID
+Gene -[regulates]-> Gene | 20939 < 20945 | 20944 < 20945 | ✅ VALID
+Gene -[regulates_rev]-> Gene | 20944 < 20945 | 20939 < 20945 | ✅ VALID
+----------------------------------------
+✅ ALL GLOBAL INDICES ARE VALID FOR BACKEND INFERENCE

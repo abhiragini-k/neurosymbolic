@@ -1,0 +1,24 @@
+Validation Report for data\graph_with_embeddings.pt
+==================================================
+
+--- 1. Node Feature Check ---
+PASS: Anatomy                   | Nodes: 402        | Emb: [402, 128]      | Type: torch.float32
+PASS: Biological_Process        | Nodes: 11381      | Emb: [11381, 128]    | Type: torch.float32
+PASS: Cellular_Component        | Nodes: 1391       | Emb: [1391, 128]     | Type: torch.float32
+PASS: Compound                  | Nodes: 1552       | Emb: [1552, 128]     | Type: torch.float32
+PASS: Disease                   | Nodes: 137        | Emb: [137, 128]      | Type: torch.float32
+PASS: Gene                      | Nodes: 20945      | Emb: [20945, 128]    | Type: torch.float32
+PASS: Molecular_Function        | Nodes: 2884       | Emb: [2884, 128]     | Type: torch.float32
+PASS: Pathway                   | Nodes: 1822       | Emb: [1822, 128]     | Type: torch.float32
+PASS: Pharmacologic_Class       | Nodes: 345        | Emb: [345, 128]      | Type: torch.float32
+PASS: Side_Effect               | Nodes: 5734       | Emb: [5734, 128]     | Type: torch.float32
+PASS: Symptom                   | Nodes: 438        | Emb: [438, 128]      | Type: torch.float32
+
+Total Nodes: 47031
+
+--- 2. Edge Connectivity Check ---
+Checked 38 edge types. Total Edges: 4451828
+
+--- 3. Overall Status ---
+SUCCESS: Graph structure and embeddings appear valid for R-GCN training.
+Ready for: Message Passing, Link Prediction

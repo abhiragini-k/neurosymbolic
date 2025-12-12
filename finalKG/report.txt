@@ -1,0 +1,68 @@
+==================================================
+HETIONET GRAPH REPORT
+==================================================
+
+Type: <class 'torch_geometric.data.hetero_data.HeteroData'>
+Metadata: (['Anatomy', 'Biological_Process', 'Cellular_Component', 'Compound', 'Disease', 'Gene', 'Molecular_Function', 'Pathway', 'Pharmacologic_Class', 'Side_Effect', 'Symptom'], [('Anatomy', 'downregulates', 'Gene'), ('Gene', 'downregulates_rev', 'Anatomy'), ('Anatomy', 'expresses', 'Gene'), ('Gene', 'expresses_rev', 'Anatomy'), ('Anatomy', 'upregulates', 'Gene'), ('Gene', 'upregulates_rev', 'Anatomy'), ('Compound', 'binds', 'Gene'), ('Gene', 'binds_rev', 'Compound'), ('Compound', 'causes', 'Side_Effect'), ('Side_Effect', 'causes_rev', 'Compound'), ('Compound', 'downregulates', 'Gene'), ('Gene', 'downregulates_rev', 'Compound'), ('Compound', 'palliates', 'Disease'), ('Disease', 'palliates_rev', 'Compound'), ('Compound', 'treats', 'Disease'), ('Disease', 'treats_rev', 'Compound'), ('Compound', 'upregulates', 'Gene'), ('Gene', 'upregulates_rev', 'Compound'), ('Disease', 'downregulates', 'Gene'), ('Gene', 'downregulates_rev', 'Disease'), ('Disease', 'presents', 'Symptom'), ('Symptom', 'presents_rev', 'Disease'), ('Disease', 'upregulates', 'Gene'), ('Gene', 'upregulates_rev', 'Disease'), ('Gene', 'covaries', 'Gene'), ('Gene', 'covaries_rev', 'Gene'), ('Gene', 'interacts', 'Gene'), ('Gene', 'interacts_rev', 'Gene'), ('Gene', 'participates', 'Biological_Process'), ('Biological_Process', 'participates_rev', 'Gene'), ('Gene', 'participates', 'Cellular_Component'), ('Cellular_Component', 'participates_rev', 'Gene'), ('Gene', 'participates', 'Molecular_Function'), ('Molecular_Function', 'participates_rev', 'Gene'), ('Gene', 'participates', 'Pathway'), ('Pathway', 'participates_rev', 'Gene'), ('Gene', 'regulates', 'Gene'), ('Gene', 'regulates_rev', 'Gene')])
+
+------------------------------
+NODE STATISTICS
+------------------------------
+Anatomy                   | Count: 402        | Features: No features
+Biological_Process        | Count: 11,381     | Features: No features
+Cellular_Component        | Count: 1,391      | Features: No features
+Compound                  | Count: 1,552      | Features: No features
+Disease                   | Count: 137        | Features: No features
+Gene                      | Count: 20,945     | Features: No features
+Molecular_Function        | Count: 2,884      | Features: No features
+Pathway                   | Count: 1,822      | Features: No features
+Pharmacologic_Class       | Count: 345        | Features: No features
+Side_Effect               | Count: 5,734      | Features: No features
+Symptom                   | Count: 438        | Features: No features
+
+TOTAL NODES: 47,031
+
+------------------------------
+EDGE STATISTICS
+------------------------------
+Anatomy         -[ downregulates ]-> Gene            | Count: 102,240
+Gene            -[downregulates_rev]-> Anatomy         | Count: 102,240
+Anatomy         -[   expresses   ]-> Gene            | Count: 526,407
+Gene            -[ expresses_rev ]-> Anatomy         | Count: 526,407
+Anatomy         -[  upregulates  ]-> Gene            | Count: 97,848
+Gene            -[upregulates_rev]-> Anatomy         | Count: 97,848
+Compound        -[     binds     ]-> Gene            | Count: 11,571
+Gene            -[   binds_rev   ]-> Compound        | Count: 11,571
+Compound        -[    causes     ]-> Side_Effect     | Count: 138,944
+Side_Effect     -[  causes_rev   ]-> Compound        | Count: 138,944
+Compound        -[ downregulates ]-> Gene            | Count: 21,102
+Gene            -[downregulates_rev]-> Compound        | Count: 21,102
+Compound        -[   palliates   ]-> Disease         | Count: 390
+Disease         -[ palliates_rev ]-> Compound        | Count: 390
+Compound        -[    treats     ]-> Disease         | Count: 755
+Disease         -[  treats_rev   ]-> Compound        | Count: 755
+Compound        -[  upregulates  ]-> Gene            | Count: 18,756
+Gene            -[upregulates_rev]-> Compound        | Count: 18,756
+Disease         -[ downregulates ]-> Gene            | Count: 7,623
+Gene            -[downregulates_rev]-> Disease         | Count: 7,623
+Disease         -[   presents    ]-> Symptom         | Count: 3,357
+Symptom         -[ presents_rev  ]-> Disease         | Count: 3,357
+Disease         -[  upregulates  ]-> Gene            | Count: 7,731
+Gene            -[upregulates_rev]-> Disease         | Count: 7,731
+Gene            -[   covaries    ]-> Gene            | Count: 61,690
+Gene            -[ covaries_rev  ]-> Gene            | Count: 61,690
+Gene            -[   interacts   ]-> Gene            | Count: 147,164
+Gene            -[ interacts_rev ]-> Gene            | Count: 147,164
+Gene            -[ participates  ]-> Biological_Process | Count: 559,504
+Biological_Process -[participates_rev]-> Gene            | Count: 559,504
+Gene            -[ participates  ]-> Cellular_Component | Count: 73,566
+Cellular_Component -[participates_rev]-> Gene            | Count: 73,566
+Gene            -[ participates  ]-> Molecular_Function | Count: 97,222
+Molecular_Function -[participates_rev]-> Gene            | Count: 97,222
+Gene            -[ participates  ]-> Pathway         | Count: 84,372
+Pathway         -[participates_rev]-> Gene            | Count: 84,372
+Gene            -[   regulates   ]-> Gene            | Count: 265,672
+Gene            -[ regulates_rev ]-> Gene            | Count: 265,672
+
+TOTAL EDGES: 4,451,828
+==================================================

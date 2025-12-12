@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from app.core.config import settings
 from app.core.database import db
 from app.services.mapping_service import mapping_service
-from app.routers import auth, analysis, entities, predict
+from app.routers import auth, analysis, entities, predict, explainability
 from app.services import pipeline
 from app import utils
 
@@ -47,6 +47,7 @@ app.include_router(auth.router, prefix="/auth", tags=["authentication"])
 app.include_router(analysis.router, prefix="/analysis", tags=["analysis"])
 app.include_router(entities.router, prefix="/entities", tags=["entities"])
 app.include_router(predict.router, prefix="/predict", tags=["predictions"])
+app.include_router(explainability.router, prefix="/explainability", tags=["explainability"])
 
 # --- NEW ROUTES for PIPELINE ---
 

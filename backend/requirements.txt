@@ -17,3 +17,5 @@ networkx
 bcrypt==3.2.2
 numpy
 python-jose[cryptography]
+torch
+torch-geometric

@@ -25,7 +25,9 @@ class Settings(BaseSettings):
     KG_DATA_DIR: str = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))), "finalKG", "data")
     
     # CORS
-    BACKEND_CORS_ORIGINS: List[str] = ["http://localhost:5173", "http://localhost:3000"]
+    # CORS
+    BACKEND_CORS_ORIGINS: List[str] = ["*"]
+
 
     class Config:
         case_sensitive = True

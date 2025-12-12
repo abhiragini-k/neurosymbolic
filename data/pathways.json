@@ -1,0 +1,49 @@
+{
+    "AMPK Pathway": [
+        "PRKAA1",
+        "PRKAA2",
+        "IRS1",
+        "AKT1",
+        "MTOR",
+        "RPTOR"
+    ],
+    "mTOR Pathway": [
+        "MTOR",
+        "RPTOR",
+        "AKT1",
+        "PIK3CA",
+        "PTEN"
+    ],
+    "PI3K Pathway": [
+        "PIK3CA",
+        "PTEN",
+        "AKT1",
+        "FOXO1",
+        "MTOR"
+    ],
+    "GLUT4 Regulation": [
+        "SLC2A4",
+        "TBC1D4",
+        "RHOQ",
+        "INS"
+    ],
+    "Inflammation Pathway": [
+        "NFKB1",
+        "RELA",
+        "TNF",
+        "IL6",
+        "STAT3"
+    ],
+    "Apoptosis": [
+        "CASP3",
+        "BAX",
+        "BCL2",
+        "TP53"
+    ],
+    "Cell Cycle": [
+        "CDK4",
+        "CCND1",
+        "RB1",
+        "E2F1"
+    ]
+}

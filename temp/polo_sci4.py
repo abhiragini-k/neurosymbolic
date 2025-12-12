@@ -1,6 +1,7 @@
 import pickle
 import csv
 import networkx as nx
+import json
 
 # --- CONFIGURATION: PRIORITY TARGETS ---
 # The agent will FORCE these paths to be checked first.
@@ -89,6 +90,47 @@ class TargetedAgent:
         if vip_boost: avg_score += 10 # Reward VIPs
         
         return min(round(avg_score, 1), 99.9)
+    def export_to_json(self, paths, filename="viz_data.json"):
+        """Exports the found paths to a Cytoscape.js compatible JSON file."""
+        elements = {"nodes": [], "edges": []}
+        added_nodes = set()
+        
+        for item in paths:
+            path = item['path']
+            
+            # Add Nodes
+            for node_id in path:
+                if node_id not in added_nodes:
+                    info = self.get_info(node_id)
+                    elements["nodes"].append({
+                        "data": {
+                            "id": node_id, 
+                            "label": info['name'], 
+                            "type": info['type'] # Used for coloring (Drug vs Gene)
+                        }
+                    })
+                    added_nodes.add(node_id)
+            
+            # Add Edges
+            for i in range(len(path) - 1):
+                u, v = path[i], path[i+1]
+                # Get edge relation from the graph
+                rel = self.G[u][v]['relation']
+                
+                # Check if edge already exists to avoid duplicates
+                edge_id = f"{u}-{v}-{rel}"
+                elements["edges"].append({
+                    "data": {
+                        "id": edge_id,
+                        "source": u, 
+                        "target": v, 
+                        "label": rel
+                    }
+                })
+                
+        with open(filename, "w") as f:
+            json.dump(elements, f, indent=2)
+        print(f"\n   📊 Visualization data saved to '{filename}'")
 
     def explain(self, drug_id, disease_id):
         source = drug_id.split("::")[-1]
@@ -148,6 +190,7 @@ class TargetedAgent:
 
         # --- SORT & DISPLAY ---
         found_paths.sort(key=lambda x: x['score'], reverse=True)
+        self.export_to_json(found_paths[:15])
         
         print(f"✅ Found {len(found_paths)} pathways. (Priority given to Key Regulators)\n")
         

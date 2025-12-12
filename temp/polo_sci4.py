@@ -25,12 +25,12 @@ EDGE_SCORES = {
 }
 
 class TargetedAgent:
-    def __init__(self, nodes_path="nodes.csv", graph_path="graph_index.pkl"):
+    def __init__(self):
         print("🎯 Initializing Target-Aware Scientific Agent...")
         self.nodes = {} 
-        self.load_nodes(nodes_path)
+        self.load_nodes("nodes.csv")
         self.G = nx.DiGraph()
-        self.load_graph_data(graph_path)
+        self.load_graph_data("graph_index.pkl")
         
         # FINAL CHECK
         if "2475" in self.G:
@@ -138,7 +138,7 @@ class TargetedAgent:
 
         if source not in self.G or target not in self.G:
             print("❌ Source or Target node not found.")
-            return []
+            return
 
         s_name = self.get_info(source)['name']
         t_name = self.get_info(target)['name']
@@ -214,8 +214,6 @@ class TargetedAgent:
                 
                 print(f"   {u_n} {arrow} {v_n} ({v_t})")
             print("")
-        
-        return found_paths
 
 if __name__ == "__main__":
     agent = TargetedAgent()

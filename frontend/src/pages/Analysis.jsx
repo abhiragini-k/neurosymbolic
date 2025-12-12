@@ -5,6 +5,7 @@ import ExplanationPanel from "@/components/ExplanationPanel";
 import GraphViewer from "@/components/GraphViewer";
 import PathwayInfluenceHeatmap from "@/components/Heatmaps/PathwayInfluenceHeatmap";
 import GeneActivationHeatmap from "@/components/Heatmaps/GeneActivationHeatmap";
+import ConfidenceBreakdown from "@/components/ConfidenceBreakdown";
 
 const Analysis = () => {
     const [drug, setDrug] = useState("");
@@ -101,11 +102,14 @@ const Analysis = () => {
                     </div>
 
                     {/* Heatmaps Row */}
-                    <div className="lg:col-span-9 lg:col-start-4">
+                    <div className="lg:col-span-12">
                         {score !== null && (
-                            <div className="grid gap-6 md:grid-cols-2">
-                                <PathwayInfluenceHeatmap />
-                                <GeneActivationHeatmap />
+                            <div className="flex flex-col lg:flex-row gap-6 pt-6">
+                                <ConfidenceBreakdown />
+                                <div className="flex-1 grid gap-6 md:grid-cols-2">
+                                    <PathwayInfluenceHeatmap />
+                                    <GeneActivationHeatmap />
+                                </div>
                             </div>
                         )}
                     </div>

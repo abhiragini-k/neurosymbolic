@@ -3,6 +3,8 @@ import Header from "@/components/Header";
 import PredictionSummary from "@/components/PredictionSummary";
 import ExplanationPanel from "@/components/ExplanationPanel";
 import GraphViewer from "@/components/GraphViewer";
+import PathwayInfluenceHeatmap from "@/components/Heatmaps/PathwayInfluenceHeatmap";
+import GeneActivationHeatmap from "@/components/Heatmaps/GeneActivationHeatmap";
 
 const Analysis = () => {
     const [drug, setDrug] = useState("");
@@ -94,6 +96,16 @@ const Analysis = () => {
                                 <p className="text-muted-foreground text-center">
                                     Select a drug and disease, then click Analyze to see results
                                 </p>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Heatmaps Row */}
+                    <div className="lg:col-span-9 lg:col-start-4">
+                        {score !== null && (
+                            <div className="grid gap-6 md:grid-cols-2">
+                                <PathwayInfluenceHeatmap />
+                                <GeneActivationHeatmap />
                             </div>
                         )}
                     </div>

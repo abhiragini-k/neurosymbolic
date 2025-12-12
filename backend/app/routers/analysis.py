@@ -12,6 +12,7 @@ from bson import ObjectId
 # I'll just append it or rewrite the file. Rewriting is safer to ensure order.
 
 from typing import List
+from app.services.neurosymbolic_service import neurosymbolic_service
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, status, WebSocket, WebSocketDisconnect
 from app.core.database import get_database, db as database_instance 
 # Note: db from database.py is the instance wrapper, get_database returns the client[db_name]
@@ -21,6 +22,7 @@ from app.core.security import get_current_user
 from app.services.analysis_workflow import process_analysis_job
 from bson import ObjectId
 import asyncio
+from pydantic import BaseModel
 
 router = APIRouter()
 
@@ -108,5 +110,26 @@ async def websocket_job_status(websocket: WebSocket, job_id: str):
                  
             await asyncio.sleep(1) # Poll every second
             
+
+            
     except WebSocketDisconnect:
         print(f"Client disconnected from job {job_id}")
+
+class ExplainRequest(BaseModel):
+    drug_id: str
+    disease_id: str
+
+@router.post("/explain", summary="Explain drug-disease path")
+def explain_path(request: ExplainRequest):
+    """
+    Triggers the Neurosymbolic agent (polo_sci4.py) to find paths between drug and disease.
+    Returns the paths and saves viz_data.json.
+    """
+    try:
+        paths = neurosymbolic_service.get_explanation(request.drug_id, request.disease_id)
+        return {"paths": paths, "message": "Explanation generated and viz_data.json updated.", "count": len(paths)}
+    except ValueError as ve:
+        raise HTTPException(status_code=503, detail=str(ve))
+    except Exception as e:
+        print(f"Error in explanation: {e}")
+        raise HTTPException(status_code=500, detail="Internal Server Error during explanation")

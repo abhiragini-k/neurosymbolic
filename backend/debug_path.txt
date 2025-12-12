@@ -1,0 +1,5 @@
+BASE_DIR: C:\Users\kabhi\neurosymbolic\backend
+CWD: C:\Users\kabhi\neurosymbolic\backend
+MODEL_DIR: C:\Users\kabhi\neurosymbolic\R-GCN-MODEL
+PREDICTION_MATRIX_PATH: C:\Users\kabhi\neurosymbolic\R-GCN-MODEL\compound_disease_predictions.npy
+Exists: True

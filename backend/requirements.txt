@@ -12,6 +12,7 @@ email-validator==2.1.0
 httpx==0.26.0
 dnspython==2.6.1
 pymongo==4.6.3
+networkx
 
 bcrypt==3.2.2
 numpy

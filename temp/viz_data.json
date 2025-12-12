@@ -2,58 +2,16 @@
   "nodes": [
     {
       "data": {
-        "id": "DB00331",
-        "label": "Metformin",
-        "type": "Compound"
-      }
-    },
-    {
-      "data": {
-        "id": "23131",
-        "label": "GPATCH8",
+        "id": "869",
+        "label": "CBLN1",
         "type": "Gene"
       }
     },
     {
       "data": {
-        "id": "2475",
-        "label": "MTOR",
-        "type": "Gene"
-      }
-    },
-    {
-      "data": {
-        "id": "4602",
-        "label": "MYB",
-        "type": "Gene"
-      }
-    },
-    {
-      "data": {
-        "id": "DOID:10763",
-        "label": "hypertension",
-        "type": "Disease"
-      }
-    },
-    {
-      "data": {
-        "id": "79902",
-        "label": "NUP85",
-        "type": "Gene"
-      }
-    },
-    {
-      "data": {
-        "id": "1956",
-        "label": "EGFR",
-        "type": "Gene"
-      }
-    },
-    {
-      "data": {
-        "id": "3485",
-        "label": "IGFBP2",
-        "type": "Gene"
+        "id": "GO:0044087",
+        "label": "regulation of cellular component biogenesis",
+        "type": "Biological_Process"
       }
     },
     {
@@ -65,65 +23,86 @@
     },
     {
       "data": {
-        "id": "23335",
-        "label": "WDR7",
+        "id": "GO:0009790",
+        "label": "embryo development",
+        "type": "Biological_Process"
+      }
+    },
+    {
+      "data": {
+        "id": "92",
+        "label": "ACVR2A",
         "type": "Gene"
       }
     },
     {
       "data": {
-        "id": "DB00790",
-        "label": "Perindopril",
-        "type": "Compound"
+        "id": "GO:0044089",
+        "label": "positive regulation of cellular component biogenesis",
+        "type": "Biological_Process"
       }
     },
     {
       "data": {
-        "id": "DB00381",
-        "label": "Amlodipine",
-        "type": "Compound"
-      }
-    },
-    {
-      "data": {
-        "id": "291",
-        "label": "SLC25A4",
+        "id": "2475",
+        "label": "MTOR",
         "type": "Gene"
       }
     },
     {
       "data": {
-        "id": "DB00999",
-        "label": "Hydrochlorothiazide",
-        "type": "Compound"
-      }
-    },
-    {
-      "data": {
-        "id": "DB01115",
-        "label": "Nifedipine",
-        "type": "Compound"
-      }
-    },
-    {
-      "data": {
-        "id": "DB00629",
-        "label": "Guanabenz",
-        "type": "Compound"
-      }
-    },
-    {
-      "data": {
-        "id": "10898",
-        "label": "CPSF4",
+        "id": "7316",
+        "label": "UBC",
         "type": "Gene"
       }
     },
     {
       "data": {
-        "id": "DB00206",
-        "label": "Reserpine",
-        "type": "Compound"
+        "id": "7157",
+        "label": "TP53",
+        "type": "Gene"
+      }
+    },
+    {
+      "data": {
+        "id": "GO:0007420",
+        "label": "brain development",
+        "type": "Biological_Process"
+      }
+    },
+    {
+      "data": {
+        "id": "1956",
+        "label": "EGFR",
+        "type": "Gene"
+      }
+    },
+    {
+      "data": {
+        "id": "675",
+        "label": "BRCA2",
+        "type": "Gene"
+      }
+    },
+    {
+      "data": {
+        "id": "GO:0007417",
+        "label": "central nervous system development",
+        "type": "Biological_Process"
+      }
+    },
+    {
+      "data": {
+        "id": "2064",
+        "label": "ERBB2",
+        "type": "Gene"
+      }
+    },
+    {
+      "data": {
+        "id": "GO:0051960",
+        "label": "regulation of nervous system development",
+        "type": "Biological_Process"
       }
     },
     {
@@ -135,22 +114,15 @@
     },
     {
       "data": {
-        "id": "6583",
-        "label": "SLC22A4",
-        "type": "Gene"
+        "id": "GO:0048646",
+        "label": "anatomical structure formation involved in morphogenesis",
+        "type": "Biological_Process"
       }
     },
     {
       "data": {
-        "id": "9641",
-        "label": "IKBKE",
-        "type": "Gene"
-      }
-    },
-    {
-      "data": {
-        "id": "57117",
-        "label": "INTS12",
+        "id": "5290",
+        "label": "PIK3CA",
         "type": "Gene"
       }
     }
@@ -158,386 +130,258 @@
   "edges": [
     {
       "data": {
-        "id": "DB00331-23131-upregulates",
-        "source": "DB00331",
-        "target": "23131",
-        "label": "upregulates"
+        "id": "869-GO:0044087-participates",
+        "source": "869",
+        "target": "GO:0044087",
+        "label": "participates"
       }
     },
     {
       "data": {
-        "id": "23131-2475-REV_regulates",
-        "source": "23131",
+        "id": "GO:0044087-672-REV_participates",
+        "source": "GO:0044087",
+        "target": "672",
+        "label": "REV_participates"
+      }
+    },
+    {
+      "data": {
+        "id": "672-GO:0009790-participates",
+        "source": "672",
+        "target": "GO:0009790",
+        "label": "participates"
+      }
+    },
+    {
+      "data": {
+        "id": "GO:0009790-92-REV_participates",
+        "source": "GO:0009790",
+        "target": "92",
+        "label": "REV_participates"
+      }
+    },
+    {
+      "data": {
+        "id": "869-GO:0044089-participates",
+        "source": "869",
+        "target": "GO:0044089",
+        "label": "participates"
+      }
+    },
+    {
+      "data": {
+        "id": "GO:0044089-2475-REV_participates",
+        "source": "GO:0044089",
         "target": "2475",
-        "label": "REV_regulates"
+        "label": "REV_participates"
       }
     },
     {
       "data": {
-        "id": "2475-4602-regulates",
+        "id": "2475-7316-interacts",
         "source": "2475",
-        "target": "4602",
-        "label": "regulates"
+        "target": "7316",
+        "label": "interacts"
       }
     },
     {
       "data": {
-        "id": "4602-DOID:10763-REV_upregulates",
-        "source": "4602",
-        "target": "DOID:10763",
-        "label": "REV_upregulates"
-      }
-    },
-    {
-      "data": {
-        "id": "DB00331-79902-downregulates",
-        "source": "DB00331",
-        "target": "79902",
-        "label": "downregulates"
-      }
-    },
-    {
-      "data": {
-        "id": "79902-1956-REV_regulates",
-        "source": "79902",
-        "target": "1956",
-        "label": "REV_regulates"
-      }
-    },
-    {
-      "data": {
-        "id": "1956-3485-regulates",
-        "source": "1956",
-        "target": "3485",
-        "label": "regulates"
-      }
-    },
-    {
-      "data": {
-        "id": "3485-DOID:10763-REV_upregulates",
-        "source": "3485",
-        "target": "DOID:10763",
-        "label": "REV_upregulates"
-      }
-    },
-    {
-      "data": {
-        "id": "DB00331-672-downregulates",
-        "source": "DB00331",
-        "target": "672",
-        "label": "downregulates"
-      }
-    },
-    {
-      "data": {
-        "id": "672-4602-regulates",
-        "source": "672",
-        "target": "4602",
-        "label": "regulates"
-      }
-    },
-    {
-      "data": {
-        "id": "4602-DOID:10763-REV_upregulates",
-        "source": "4602",
-        "target": "DOID:10763",
-        "label": "REV_upregulates"
-      }
-    },
-    {
-      "data": {
-        "id": "DB00331-23335-upregulates",
-        "source": "DB00331",
-        "target": "23335",
-        "label": "upregulates"
-      }
-    },
-    {
-      "data": {
-        "id": "23335-DB00790-REV_upregulates",
-        "source": "23335",
-        "target": "DB00790",
-        "label": "REV_upregulates"
-      }
-    },
-    {
-      "data": {
-        "id": "DB00790-DOID:10763-treats",
-        "source": "DB00790",
-        "target": "DOID:10763",
-        "label": "treats"
-      }
-    },
-    {
-      "data": {
-        "id": "DB00331-23335-upregulates",
-        "source": "DB00331",
-        "target": "23335",
-        "label": "upregulates"
-      }
-    },
-    {
-      "data": {
-        "id": "23335-DB00381-REV_upregulates",
-        "source": "23335",
-        "target": "DB00381",
-        "label": "REV_upregulates"
-      }
-    },
-    {
-      "data": {
-        "id": "DB00381-DOID:10763-treats",
-        "source": "DB00381",
-        "target": "DOID:10763",
-        "label": "treats"
-      }
-    },
-    {
-      "data": {
-        "id": "DB00331-291-upregulates",
-        "source": "DB00331",
-        "target": "291",
-        "label": "upregulates"
-      }
-    },
-    {
-      "data": {
-        "id": "291-DB00999-REV_downregulates",
-        "source": "291",
-        "target": "DB00999",
-        "label": "REV_downregulates"
-      }
-    },
-    {
-      "data": {
-        "id": "DB00999-DOID:10763-treats",
-        "source": "DB00999",
-        "target": "DOID:10763",
-        "label": "treats"
-      }
-    },
-    {
-      "data": {
-        "id": "DB00331-23131-upregulates",
-        "source": "DB00331",
-        "target": "23131",
-        "label": "upregulates"
-      }
-    },
-    {
-      "data": {
-        "id": "23131-DB00790-REV_upregulates",
-        "source": "23131",
-        "target": "DB00790",
-        "label": "REV_upregulates"
-      }
-    },
-    {
-      "data": {
-        "id": "DB00790-DOID:10763-treats",
-        "source": "DB00790",
-        "target": "DOID:10763",
-        "label": "treats"
-      }
-    },
-    {
-      "data": {
-        "id": "DB00331-291-upregulates",
-        "source": "DB00331",
-        "target": "291",
-        "label": "upregulates"
-      }
-    },
-    {
-      "data": {
-        "id": "291-DB01115-REV_downregulates",
-        "source": "291",
-        "target": "DB01115",
-        "label": "REV_downregulates"
-      }
-    },
-    {
-      "data": {
-        "id": "DB01115-DOID:10763-treats",
-        "source": "DB01115",
-        "target": "DOID:10763",
-        "label": "treats"
-      }
-    },
-    {
-      "data": {
-        "id": "DB00331-23131-upregulates",
-        "source": "DB00331",
-        "target": "23131",
-        "label": "upregulates"
-      }
-    },
-    {
-      "data": {
-        "id": "23131-DB00629-REV_upregulates",
-        "source": "23131",
-        "target": "DB00629",
-        "label": "REV_upregulates"
-      }
-    },
-    {
-      "data": {
-        "id": "DB00629-DOID:10763-treats",
-        "source": "DB00629",
-        "target": "DOID:10763",
-        "label": "treats"
-      }
-    },
-    {
-      "data": {
-        "id": "DB00331-10898-upregulates",
-        "source": "DB00331",
-        "target": "10898",
-        "label": "upregulates"
-      }
-    },
-    {
-      "data": {
-        "id": "10898-DB00206-REV_upregulates",
-        "source": "10898",
-        "target": "DB00206",
-        "label": "REV_upregulates"
-      }
-    },
-    {
-      "data": {
-        "id": "DB00206-DOID:10763-treats",
-        "source": "DB00206",
-        "target": "DOID:10763",
-        "label": "treats"
-      }
-    },
-    {
-      "data": {
-        "id": "DB00331-672-downregulates",
-        "source": "DB00331",
-        "target": "672",
-        "label": "downregulates"
-      }
-    },
-    {
-      "data": {
-        "id": "672-207-REV_interacts",
-        "source": "672",
-        "target": "207",
+        "id": "7316-92-REV_interacts",
+        "source": "7316",
+        "target": "92",
         "label": "REV_interacts"
       }
     },
     {
       "data": {
-        "id": "207-3485-regulates",
+        "id": "869-GO:0044089-participates",
+        "source": "869",
+        "target": "GO:0044089",
+        "label": "participates"
+      }
+    },
+    {
+      "data": {
+        "id": "GO:0044089-7157-REV_participates",
+        "source": "GO:0044089",
+        "target": "7157",
+        "label": "REV_participates"
+      }
+    },
+    {
+      "data": {
+        "id": "7157-7316-interacts",
+        "source": "7157",
+        "target": "7316",
+        "label": "interacts"
+      }
+    },
+    {
+      "data": {
+        "id": "7316-92-REV_interacts",
+        "source": "7316",
+        "target": "92",
+        "label": "REV_interacts"
+      }
+    },
+    {
+      "data": {
+        "id": "869-GO:0007420-participates",
+        "source": "869",
+        "target": "GO:0007420",
+        "label": "participates"
+      }
+    },
+    {
+      "data": {
+        "id": "GO:0007420-1956-REV_participates",
+        "source": "GO:0007420",
+        "target": "1956",
+        "label": "REV_participates"
+      }
+    },
+    {
+      "data": {
+        "id": "1956-7316-interacts",
+        "source": "1956",
+        "target": "7316",
+        "label": "interacts"
+      }
+    },
+    {
+      "data": {
+        "id": "7316-92-REV_interacts",
+        "source": "7316",
+        "target": "92",
+        "label": "REV_interacts"
+      }
+    },
+    {
+      "data": {
+        "id": "869-GO:0007420-participates",
+        "source": "869",
+        "target": "GO:0007420",
+        "label": "participates"
+      }
+    },
+    {
+      "data": {
+        "id": "GO:0007420-675-REV_participates",
+        "source": "GO:0007420",
+        "target": "675",
+        "label": "REV_participates"
+      }
+    },
+    {
+      "data": {
+        "id": "675-7316-interacts",
+        "source": "675",
+        "target": "7316",
+        "label": "interacts"
+      }
+    },
+    {
+      "data": {
+        "id": "7316-92-REV_interacts",
+        "source": "7316",
+        "target": "92",
+        "label": "REV_interacts"
+      }
+    },
+    {
+      "data": {
+        "id": "869-GO:0007417-participates",
+        "source": "869",
+        "target": "GO:0007417",
+        "label": "participates"
+      }
+    },
+    {
+      "data": {
+        "id": "GO:0007417-2064-REV_participates",
+        "source": "GO:0007417",
+        "target": "2064",
+        "label": "REV_participates"
+      }
+    },
+    {
+      "data": {
+        "id": "2064-7316-interacts",
+        "source": "2064",
+        "target": "7316",
+        "label": "interacts"
+      }
+    },
+    {
+      "data": {
+        "id": "7316-92-REV_interacts",
+        "source": "7316",
+        "target": "92",
+        "label": "REV_interacts"
+      }
+    },
+    {
+      "data": {
+        "id": "869-GO:0051960-participates",
+        "source": "869",
+        "target": "GO:0051960",
+        "label": "participates"
+      }
+    },
+    {
+      "data": {
+        "id": "GO:0051960-207-REV_participates",
+        "source": "GO:0051960",
+        "target": "207",
+        "label": "REV_participates"
+      }
+    },
+    {
+      "data": {
+        "id": "207-7316-interacts",
         "source": "207",
-        "target": "3485",
-        "label": "regulates"
+        "target": "7316",
+        "label": "interacts"
       }
     },
     {
       "data": {
-        "id": "3485-DOID:10763-REV_upregulates",
-        "source": "3485",
-        "target": "DOID:10763",
-        "label": "REV_upregulates"
+        "id": "7316-92-REV_interacts",
+        "source": "7316",
+        "target": "92",
+        "label": "REV_interacts"
       }
     },
     {
       "data": {
-        "id": "DB00331-23335-upregulates",
-        "source": "DB00331",
-        "target": "23335",
-        "label": "upregulates"
+        "id": "869-GO:0048646-participates",
+        "source": "869",
+        "target": "GO:0048646",
+        "label": "participates"
       }
     },
     {
       "data": {
-        "id": "23335-3485-REV_regulates",
-        "source": "23335",
-        "target": "3485",
-        "label": "REV_regulates"
+        "id": "GO:0048646-5290-REV_participates",
+        "source": "GO:0048646",
+        "target": "5290",
+        "label": "REV_participates"
       }
     },
     {
       "data": {
-        "id": "3485-DOID:10763-REV_upregulates",
-        "source": "3485",
-        "target": "DOID:10763",
-        "label": "REV_upregulates"
+        "id": "5290-7316-interacts",
+        "source": "5290",
+        "target": "7316",
+        "label": "interacts"
       }
     },
     {
       "data": {
-        "id": "DB00331-23131-upregulates",
-        "source": "DB00331",
-        "target": "23131",
-        "label": "upregulates"
-      }
-    },
-    {
-      "data": {
-        "id": "23131-6583-REV_regulates",
-        "source": "23131",
-        "target": "6583",
-        "label": "REV_regulates"
-      }
-    },
-    {
-      "data": {
-        "id": "6583-DOID:10763-REV_upregulates",
-        "source": "6583",
-        "target": "DOID:10763",
-        "label": "REV_upregulates"
-      }
-    },
-    {
-      "data": {
-        "id": "DB00331-9641-upregulates",
-        "source": "DB00331",
-        "target": "9641",
-        "label": "upregulates"
-      }
-    },
-    {
-      "data": {
-        "id": "9641-4602-REV_regulates",
-        "source": "9641",
-        "target": "4602",
-        "label": "REV_regulates"
-      }
-    },
-    {
-      "data": {
-        "id": "4602-DOID:10763-REV_upregulates",
-        "source": "4602",
-        "target": "DOID:10763",
-        "label": "REV_upregulates"
-      }
-    },
-    {
-      "data": {
-        "id": "DB00331-23131-upregulates",
-        "source": "DB00331",
-        "target": "23131",
-        "label": "upregulates"
-      }
-    },
-    {
-      "data": {
-        "id": "23131-57117-REV_regulates",
-        "source": "23131",
-        "target": "57117",
-        "label": "REV_regulates"
-      }
-    },
-    {
-      "data": {
-        "id": "57117-DOID:10763-REV_downregulates",
-        "source": "57117",
-        "target": "DOID:10763",
-        "label": "REV_downregulates"
+        "id": "7316-92-REV_interacts",
+        "source": "7316",
+        "target": "92",
+        "label": "REV_interacts"
       }
     }
   ]

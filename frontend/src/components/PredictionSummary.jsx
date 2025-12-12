@@ -43,20 +43,7 @@ const PredictionSummary = ({
                     </Select>
                 </div>
 
-                <div className="space-y-2">
-                    <Label htmlFor="disease">Select Disease</Label>
-                    <Select value={disease} onValueChange={onDiseaseChange}>
-                        <SelectTrigger id="disease">
-                            <SelectValue placeholder="Choose a disease" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="diabetes">Type 2 Diabetes</SelectItem>
-                            <SelectItem value="alzheimers">Alzheimer's Disease</SelectItem>
-                            <SelectItem value="cancer">Cancer</SelectItem>
-                            <SelectItem value="cardiovascular">Cardiovascular Disease</SelectItem>
-                        </SelectContent>
-                    </Select>
-                </div>
+
 
                 <div className="space-y-3">
                     <div className="flex justify-between">

@@ -1,0 +1,544 @@
+{
+  "nodes": [
+    {
+      "data": {
+        "id": "DB00331",
+        "label": "Metformin",
+        "type": "Compound"
+      }
+    },
+    {
+      "data": {
+        "id": "23131",
+        "label": "GPATCH8",
+        "type": "Gene"
+      }
+    },
+    {
+      "data": {
+        "id": "2475",
+        "label": "MTOR",
+        "type": "Gene"
+      }
+    },
+    {
+      "data": {
+        "id": "4602",
+        "label": "MYB",
+        "type": "Gene"
+      }
+    },
+    {
+      "data": {
+        "id": "DOID:10763",
+        "label": "hypertension",
+        "type": "Disease"
+      }
+    },
+    {
+      "data": {
+        "id": "79902",
+        "label": "NUP85",
+        "type": "Gene"
+      }
+    },
+    {
+      "data": {
+        "id": "1956",
+        "label": "EGFR",
+        "type": "Gene"
+      }
+    },
+    {
+      "data": {
+        "id": "3485",
+        "label": "IGFBP2",
+        "type": "Gene"
+      }
+    },
+    {
+      "data": {
+        "id": "672",
+        "label": "BRCA1",
+        "type": "Gene"
+      }
+    },
+    {
+      "data": {
+        "id": "23335",
+        "label": "WDR7",
+        "type": "Gene"
+      }
+    },
+    {
+      "data": {
+        "id": "DB00790",
+        "label": "Perindopril",
+        "type": "Compound"
+      }
+    },
+    {
+      "data": {
+        "id": "DB00381",
+        "label": "Amlodipine",
+        "type": "Compound"
+      }
+    },
+    {
+      "data": {
+        "id": "291",
+        "label": "SLC25A4",
+        "type": "Gene"
+      }
+    },
+    {
+      "data": {
+        "id": "DB00999",
+        "label": "Hydrochlorothiazide",
+        "type": "Compound"
+      }
+    },
+    {
+      "data": {
+        "id": "DB01115",
+        "label": "Nifedipine",
+        "type": "Compound"
+      }
+    },
+    {
+      "data": {
+        "id": "DB00629",
+        "label": "Guanabenz",
+        "type": "Compound"
+      }
+    },
+    {
+      "data": {
+        "id": "10898",
+        "label": "CPSF4",
+        "type": "Gene"
+      }
+    },
+    {
+      "data": {
+        "id": "DB00206",
+        "label": "Reserpine",
+        "type": "Compound"
+      }
+    },
+    {
+      "data": {
+        "id": "207",
+        "label": "AKT1",
+        "type": "Gene"
+      }
+    },
+    {
+      "data": {
+        "id": "6583",
+        "label": "SLC22A4",
+        "type": "Gene"
+      }
+    },
+    {
+      "data": {
+        "id": "9641",
+        "label": "IKBKE",
+        "type": "Gene"
+      }
+    },
+    {
+      "data": {
+        "id": "57117",
+        "label": "INTS12",
+        "type": "Gene"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "data": {
+        "id": "DB00331-23131-upregulates",
+        "source": "DB00331",
+        "target": "23131",
+        "label": "upregulates"
+      }
+    },
+    {
+      "data": {
+        "id": "23131-2475-REV_regulates",
+        "source": "23131",
+        "target": "2475",
+        "label": "REV_regulates"
+      }
+    },
+    {
+      "data": {
+        "id": "2475-4602-regulates",
+        "source": "2475",
+        "target": "4602",
+        "label": "regulates"
+      }
+    },
+    {
+      "data": {
+        "id": "4602-DOID:10763-REV_upregulates",
+        "source": "4602",
+        "target": "DOID:10763",
+        "label": "REV_upregulates"
+      }
+    },
+    {
+      "data": {
+        "id": "DB00331-79902-downregulates",
+        "source": "DB00331",
+        "target": "79902",
+        "label": "downregulates"
+      }
+    },
+    {
+      "data": {
+        "id": "79902-1956-REV_regulates",
+        "source": "79902",
+        "target": "1956",
+        "label": "REV_regulates"
+      }
+    },
+    {
+      "data": {
+        "id": "1956-3485-regulates",
+        "source": "1956",
+        "target": "3485",
+        "label": "regulates"
+      }
+    },
+    {
+      "data": {
+        "id": "3485-DOID:10763-REV_upregulates",
+        "source": "3485",
+        "target": "DOID:10763",
+        "label": "REV_upregulates"
+      }
+    },
+    {
+      "data": {
+        "id": "DB00331-672-downregulates",
+        "source": "DB00331",
+        "target": "672",
+        "label": "downregulates"
+      }
+    },
+    {
+      "data": {
+        "id": "672-4602-regulates",
+        "source": "672",
+        "target": "4602",
+        "label": "regulates"
+      }
+    },
+    {
+      "data": {
+        "id": "4602-DOID:10763-REV_upregulates",
+        "source": "4602",
+        "target": "DOID:10763",
+        "label": "REV_upregulates"
+      }
+    },
+    {
+      "data": {
+        "id": "DB00331-23335-upregulates",
+        "source": "DB00331",
+        "target": "23335",
+        "label": "upregulates"
+      }
+    },
+    {
+      "data": {
+        "id": "23335-DB00790-REV_upregulates",
+        "source": "23335",
+        "target": "DB00790",
+        "label": "REV_upregulates"
+      }
+    },
+    {
+      "data": {
+        "id": "DB00790-DOID:10763-treats",
+        "source": "DB00790",
+        "target": "DOID:10763",
+        "label": "treats"
+      }
+    },
+    {
+      "data": {
+        "id": "DB00331-23335-upregulates",
+        "source": "DB00331",
+        "target": "23335",
+        "label": "upregulates"
+      }
+    },
+    {
+      "data": {
+        "id": "23335-DB00381-REV_upregulates",
+        "source": "23335",
+        "target": "DB00381",
+        "label": "REV_upregulates"
+      }
+    },
+    {
+      "data": {
+        "id": "DB00381-DOID:10763-treats",
+        "source": "DB00381",
+        "target": "DOID:10763",
+        "label": "treats"
+      }
+    },
+    {
+      "data": {
+        "id": "DB00331-291-upregulates",
+        "source": "DB00331",
+        "target": "291",
+        "label": "upregulates"
+      }
+    },
+    {
+      "data": {
+        "id": "291-DB00999-REV_downregulates",
+        "source": "291",
+        "target": "DB00999",
+        "label": "REV_downregulates"
+      }
+    },
+    {
+      "data": {
+        "id": "DB00999-DOID:10763-treats",
+        "source": "DB00999",
+        "target": "DOID:10763",
+        "label": "treats"
+      }
+    },
+    {
+      "data": {
+        "id": "DB00331-23131-upregulates",
+        "source": "DB00331",
+        "target": "23131",
+        "label": "upregulates"
+      }
+    },
+    {
+      "data": {
+        "id": "23131-DB00790-REV_upregulates",
+        "source": "23131",
+        "target": "DB00790",
+        "label": "REV_upregulates"
+      }
+    },
+    {
+      "data": {
+        "id": "DB00790-DOID:10763-treats",
+        "source": "DB00790",
+        "target": "DOID:10763",
+        "label": "treats"
+      }
+    },
+    {
+      "data": {
+        "id": "DB00331-291-upregulates",
+        "source": "DB00331",
+        "target": "291",
+        "label": "upregulates"
+      }
+    },
+    {
+      "data": {
+        "id": "291-DB01115-REV_downregulates",
+        "source": "291",
+        "target": "DB01115",
+        "label": "REV_downregulates"
+      }
+    },
+    {
+      "data": {
+        "id": "DB01115-DOID:10763-treats",
+        "source": "DB01115",
+        "target": "DOID:10763",
+        "label": "treats"
+      }
+    },
+    {
+      "data": {
+        "id": "DB00331-23131-upregulates",
+        "source": "DB00331",
+        "target": "23131",
+        "label": "upregulates"
+      }
+    },
+    {
+      "data": {
+        "id": "23131-DB00629-REV_upregulates",
+        "source": "23131",
+        "target": "DB00629",
+        "label": "REV_upregulates"
+      }
+    },
+    {
+      "data": {
+        "id": "DB00629-DOID:10763-treats",
+        "source": "DB00629",
+        "target": "DOID:10763",
+        "label": "treats"
+      }
+    },
+    {
+      "data": {
+        "id": "DB00331-10898-upregulates",
+        "source": "DB00331",
+        "target": "10898",
+        "label": "upregulates"
+      }
+    },
+    {
+      "data": {
+        "id": "10898-DB00206-REV_upregulates",
+        "source": "10898",
+        "target": "DB00206",
+        "label": "REV_upregulates"
+      }
+    },
+    {
+      "data": {
+        "id": "DB00206-DOID:10763-treats",
+        "source": "DB00206",
+        "target": "DOID:10763",
+        "label": "treats"
+      }
+    },
+    {
+      "data": {
+        "id": "DB00331-672-downregulates",
+        "source": "DB00331",
+        "target": "672",
+        "label": "downregulates"
+      }
+    },
+    {
+      "data": {
+        "id": "672-207-REV_interacts",
+        "source": "672",
+        "target": "207",
+        "label": "REV_interacts"
+      }
+    },
+    {
+      "data": {
+        "id": "207-3485-regulates",
+        "source": "207",
+        "target": "3485",
+        "label": "regulates"
+      }
+    },
+    {
+      "data": {
+        "id": "3485-DOID:10763-REV_upregulates",
+        "source": "3485",
+        "target": "DOID:10763",
+        "label": "REV_upregulates"
+      }
+    },
+    {
+      "data": {
+        "id": "DB00331-23335-upregulates",
+        "source": "DB00331",
+        "target": "23335",
+        "label": "upregulates"
+      }
+    },
+    {
+      "data": {
+        "id": "23335-3485-REV_regulates",
+        "source": "23335",
+        "target": "3485",
+        "label": "REV_regulates"
+      }
+    },
+    {
+      "data": {
+        "id": "3485-DOID:10763-REV_upregulates",
+        "source": "3485",
+        "target": "DOID:10763",
+        "label": "REV_upregulates"
+      }
+    },
+    {
+      "data": {
+        "id": "DB00331-23131-upregulates",
+        "source": "DB00331",
+        "target": "23131",
+        "label": "upregulates"
+      }
+    },
+    {
+      "data": {
+        "id": "23131-6583-REV_regulates",
+        "source": "23131",
+        "target": "6583",
+        "label": "REV_regulates"
+      }
+    },
+    {
+      "data": {
+        "id": "6583-DOID:10763-REV_upregulates",
+        "source": "6583",
+        "target": "DOID:10763",
+        "label": "REV_upregulates"
+      }
+    },
+    {
+      "data": {
+        "id": "DB00331-9641-upregulates",
+        "source": "DB00331",
+        "target": "9641",
+        "label": "upregulates"
+      }
+    },
+    {
+      "data": {
+        "id": "9641-4602-REV_regulates",
+        "source": "9641",
+        "target": "4602",
+        "label": "REV_regulates"
+      }
+    },
+    {
+      "data": {
+        "id": "4602-DOID:10763-REV_upregulates",
+        "source": "4602",
+        "target": "DOID:10763",
+        "label": "REV_upregulates"
+      }
+    },
+    {
+      "data": {
+        "id": "DB00331-23131-upregulates",
+        "source": "DB00331",
+        "target": "23131",
+        "label": "upregulates"
+      }
+    },
+    {
+      "data": {
+        "id": "23131-57117-REV_regulates",
+        "source": "23131",
+        "target": "57117",
+        "label": "REV_regulates"
+      }
+    },
+    {
+      "data": {
+        "id": "57117-DOID:10763-REV_downregulates",
+        "source": "57117",
+        "target": "DOID:10763",
+        "label": "REV_downregulates"
+      }
+    }
+  ]
+}

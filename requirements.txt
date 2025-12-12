@@ -1,0 +1,16 @@
+# Start a venv
+# Install the packages
+
+# Core Database Driver
+neo4j>=5.15.0
+
+# Ontology Parsing
+owlready2>=0.45.0
+
+# Data Manipulation
+pandas>=2.1.0
+numpy>=1.26.0
+
+# Utilities
+tqdm>=4.66.0          # For progress bars during the long ontology ingestion
+python-dotenv>=1.0.0  # To securely manage your Neo4j passwords in a .env file

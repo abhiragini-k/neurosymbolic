@@ -50,6 +50,11 @@ if not os.path.exists(KG_GRAPH_PATH):
     KG_GRAPH_PATH = r"c:\Users\kabhi\neurosymbolic\finalKG\data\graph.pt"
 
 
+# --- CACHE ---
+# Stores: (drug_id, disease_id) -> { "stdout": str, "paths": list, "viz_data": dict }
+_analysis_cache = {}
+
+
 def load_graph_embeddings():
     global _graph_data
     if _graph_data is None:
@@ -126,217 +131,204 @@ def run_rgcn(drug_id: str, top_k: int = 10) -> List[Dict[str, Any]]:
         
     return results
 
-def run_analysis(drug_id: str, disease_id: str) -> Dict[str, Any]:
+def perform_polo_analysis(drug_id: str, disease_id: str):
     """
-    Run Polo Symbolic Analysis.
-    This calls polo_sci4.py and saves output to temp/viz_data.json.
+    Helper to run Polo Agent analysis with caching and without file I/O race conditions.
+    Returns dict: { "stdout": str, "paths": list, "viz_data": dict, "error": str }
     """
-    global polo_agent
+    global polo_agent, _analysis_cache
     
-    # Change working directory to temp so polo_sci4 can find its local files (nodes.csv, etc.)
+    # Lazy Init Agent Needed for ID resolution
     original_cwd = os.getcwd()
     os.chdir(TEMP_DIR)
-    
     try:
-        # Import polo_sci4 only when needed and in correct dir
-        import polo_sci4
-        
         if polo_agent is None:
+            import polo_sci4
             if hasattr(polo_sci4, 'TargetedAgent'):
                 polo_agent = polo_sci4.TargetedAgent()
             else:
                 polo_agent = polo_sci4.RobustPoloAgent()
+                
+            # Monkey Patch
+            if hasattr(polo_sci4, 'VIP_MOLECULES'):
+                for k, v in polo_sci4.VIP_MOLECULES.items():
+                    if isinstance(v, list) and len(v) > 0:
+                        polo_sci4.VIP_MOLECULES[k] = v[0]
+    except Exception as e:
+        print(f"Agent init error: {e}")
+    finally:
+        os.chdir(original_cwd)
+
+    # Resolve IDs for consistent Cache Key
+    # If polo_agent is available, use it to resolve names to IDs
+    # Otherwise use inputs as is (fallback)
+    c_key = drug_id
+    d_key = disease_id
+    
+    if polo_agent:
+        resolved_c = polo_agent.get_id(drug_id)
+        if resolved_c: c_key = resolved_c
+        elif drug_id in polo_agent.nodes: c_key = drug_id
+            
+        resolved_d = polo_agent.get_id(disease_id)
+        if resolved_d: d_key = resolved_d
+        elif disease_id in polo_agent.nodes: d_key = disease_id
+            
+    cache_key = (str(c_key), str(d_key))
+    if cache_key in _analysis_cache:
+        print(f"DEBUG: Cache Hit for {cache_key}")
+        return _analysis_cache[cache_key]
+        
+    print(f"DEBUG: Cache Miss for {cache_key}. Running analysis...")
+    
+    original_cwd = os.getcwd()
+    os.chdir(TEMP_DIR)
+    
+    result = { "stdout": "", "paths": [], "viz_data": {}, "error": None }
+    
+    try:
+        import polo_sci4
         import importlib
         import io
         from contextlib import redirect_stdout
         
-        # Force reload to ensure we get the user's latest code
-        importlib.reload(polo_sci4)
-        
-        # Instantiate the correct agent class
-        # User might switch between RobustPoloAgent and TargetedAgent
-        target_class = getattr(polo_sci4, 'RobustPoloAgent', getattr(polo_sci4, 'TargetedAgent', None))
-        
-        if target_class is None:
-            raise ImportError("Could not find RobustPoloAgent or TargetedAgent in polo_sci4")
-            
-        # MONKEY PATCH: Fix VIP_MOLECULES if they are lists (which causes TypeError in the loop)
-        # The user's script iterates over values expecting them to be hashable (strings), but they are lists.
-        if hasattr(polo_sci4, 'VIP_MOLECULES'):
-            for k, v in polo_sci4.VIP_MOLECULES.items():
-                if isinstance(v, list) and len(v) > 0:
-                    # Take the first ID from the list to make it compatible with the loop
-                    polo_sci4.VIP_MOLECULES[k] = v[0]
-        
-        if polo_agent is None or not isinstance(polo_agent, target_class):
-            polo_agent = target_class()
-            
-        # Capture stdout to parse the rules printed by the agent
-        f = io.StringIO()
-        with redirect_stdout(f):
-            polo_agent.explain(drug_id, disease_id)
-        
-        output = f.getvalue()
-        print(output) # Print to real stdout for debugging logs
-        
-        # Parse output for rules and chains
-        # Expected format:
-        # 🔷 MECHANISM 1 [VIA MTOR (Targeted)]
-        #    Specific Score: 0.1234
-        #       CBLN1 --[participates in]--> regulation ...
-        
-        parsed_chains = []
-        parsed_rules = []
-        
-        import re
-        
-        # Regex for parsing path lines
-        # Matches: Source --[Rel]--> Target (Type)
-        # Handles various arrow types: --, <---, ---
-        path_regex = re.compile(r"^\s*(?P<source>.+?)\s+(?:<?-+)\s*\[(?P<rel>.+?)\]\s*(?:-+>?)\s+(?P<target>.+?)\s+\((?P<type>.+?)\)$")
-
-        lines = output.split('\n')
-        current_chain = None
-        current_rule_parts = []
-        
-        for line in lines:
-            line = line.strip()
-            if line.startswith("🔷 MECHANISM"):
-                # Save previous if exists
-                if current_chain:
-                    parsed_chains.append(current_chain)
-                    parsed_rules.append(f"Rule ({current_chain['tag']}): " + ", which ".join(current_rule_parts))
+        # Ensure agent is initialized (Double check)
+        if polo_agent is None:
+             if hasattr(polo_sci4, 'RobustPoloAgent'):
+                polo_agent = polo_sci4.RobustPoloAgent()
                 
-                # Start new
-                parts = line.split('[')
-                tag = parts[1].replace(']', '') if len(parts) > 1 else "General"
-                current_chain = {
-                    "pathway": [], # We'll extract nodes
-                    "confidence": 0.0,
-                    "edges": [],
-                    "tag": tag
-                }
-                current_rule_parts = []
-                
-            elif line.startswith("Specific Score:"):
-                if current_chain:
-                    try:
-                        score = float(line.split(":")[1].strip())
-                        current_chain["confidence"] = min(score * 100, 99.9) if score < 1 else score
-                    except: pass
+        # CAPTURE STDOUT
+        f_buffer = io.StringIO()
+        with redirect_stdout(f_buffer):
+            # Pass write_file=False to avoid race condition
+            found_paths = polo_agent.explain(drug_id, disease_id, write_file=False)
             
-            elif "[" in line and "]" in line and "(" in line and ")" in line:
-                # Try matching regex
-                match = path_regex.match(line)
-                if current_chain and match:
-                    source = match.group("source").strip()
-                    rel = match.group("rel").strip()
-                    target = match.group("target").strip()
-                    
-                    current_chain["edges"].append(rel)
-                    
-                    # Populate pathway nodes
-                    if not current_chain["pathway"]:
-                        current_chain["pathway"].append(source)
-                    current_chain["pathway"].append(target)
-                    
-                    # Build rule text
-                    current_rule_parts.append(f"{source} {rel} {target}")
-
-        # Append last one
-        if current_chain:
-            parsed_chains.append(current_chain)
-            parsed_rules.append(f"Rule ({current_chain['tag']}): " + ", which ".join(current_rule_parts))
-
+        result["stdout"] = f_buffer.getvalue()
+        result["paths"] = found_paths
         
-        viz_path = "viz_data.json"
-        if os.path.exists(viz_path):
-            with open(viz_path, 'r') as f:
-                data = json.load(f)
-            
-            # Merge parsed data
-            data["reasoning_chains"] = parsed_chains
-            data["symbolic_rules"] = parsed_rules
-            
-            # Mock scores if missing
-            if "neural_score" not in data: data["neural_score"] = 0.85
-            if "symbolic_score" not in data: data["symbolic_score"] = 0.75
-            
-            return data
+        # Generate Viz Data in-memory
+        if hasattr(polo_agent, 'export_to_json'):
+            top_paths = found_paths[:20] if found_paths else []
+            viz_data = polo_agent.export_to_json(top_paths, write_file=False)
+            result["viz_data"] = viz_data
         else:
-            return {"error": "viz_data.json not generated"}
-            
+             result["viz_data"] = {"nodes": [], "edges": []}
+
+        # Cache valid results
+        if found_paths:
+             _analysis_cache[cache_key] = result
+             
+        # Print logs to real console
+        print(result["stdout"])
+        
     except Exception as e:
-        print(f"Error running polo analysis: {e}")
+        print(f"Error in perform_polo_analysis: {e}")
         import traceback
         traceback.print_exc()
-        return {"error": str(e)}
-        
+        result["error"] = str(e)
     finally:
         os.chdir(original_cwd)
+        
+    return result
+
+def run_analysis(drug_id: str, disease_id: str) -> Dict[str, Any]:
+    """
+    Run Polo Symbolic Analysis via Helper.
+    """
+    analysis_res = perform_polo_analysis(drug_id, disease_id)
+    
+    if analysis_res["error"]:
+        return {"error": analysis_res["error"]}
+        
+    full_output = analysis_res["stdout"]
+    viz_data = analysis_res["viz_data"]
+    
+    # Parse output for rules and chains
+    parsed_chains = []
+    parsed_rules = []
+    
+    import re
+    path_regex = re.compile(r"^\s*(?P<source>.+?)\s+(?:<?-+)\s*\[(?P<rel>.+?)\]\s*(?:-+>?)\s+(?P<target>.+?)\s+\((?P<type>.+?)\)$")
+
+    lines = full_output.split('\n')
+    current_chain = None
+    current_rule_parts = []
+    
+    for line in lines:
+        line = line.strip()
+        if line.startswith("🔷 MECHANISM"):
+            if current_chain:
+                parsed_chains.append(current_chain)
+                parsed_rules.append(f"Rule ({current_chain['tag']}): " + ", which ".join(current_rule_parts))
+            
+            parts = line.split('[')
+            tag = parts[1].replace(']', '') if len(parts) > 1 else "General"
+            current_chain = {
+                "pathway": [],
+                "confidence": 0.0,
+                "edges": [],
+                "tag": tag
+            }
+            current_rule_parts = []
+            
+        elif line.startswith("Specific Score:"):
+            if current_chain:
+                try:
+                    score = float(line.split(":")[1].strip())
+                    current_chain["confidence"] = min(score * 100, 99.9) if score < 1 else score
+                except: pass
+        
+        elif "[" in line and "]" in line and "(" in line and ")" in line:
+            match = path_regex.match(line)
+            if current_chain and match:
+                source = match.group("source").strip()
+                rel = match.group("rel").strip()
+                target = match.group("target").strip()
+                
+                current_chain["edges"].append(rel)
+                
+                if not current_chain["pathway"]:
+                    current_chain["pathway"].append(source)
+                current_chain["pathway"].append(target)
+                
+                current_rule_parts.append(f"{source} {rel} {target}")
+
+    if current_chain:
+        parsed_chains.append(current_chain)
+        parsed_rules.append(f"Rule ({current_chain['tag']}): " + ", which ".join(current_rule_parts))
+
+    return {
+        "visual_data": viz_data,
+        "reasoning_chains": parsed_chains,
+        "symbolic_rules": parsed_rules,
+        "neural_score": 0.85,
+        "symbolic_score": 0.75,
+        "graph": viz_data,
+        "raw_output": full_output
+    }
+
 
 def get_confidence_breakdown(drug_id: str, disease_id: str) -> Dict[str, Any]:
     """
-    Generate detailed confidence breakdown.
-    1. Pathway Match (via Polo)
-    2. Gene Influence (via Polo paths)
-    3. Embedding Similarity (via graph.pt)
-    4. Rule Reasoning (via Polo tags)
+    Generate detailed confidence breakdown using Cached Analysis.
     """
-    global polo_agent, _graph_data
+    global _graph_data
     
-    # 1. & 2. & 4. Run Polo to get paths and rules
-    # We need to run explain and capture the RETURNED paths (not just json)
-    # Ensure polo is initialized
-    original_cwd = os.getcwd()
-    os.chdir(TEMP_DIR)
-    found_paths = []
+    # Use Helper
+    analysis_res = perform_polo_analysis(drug_id, disease_id)
+    found_paths = analysis_res["paths"]
     
-    try:
-        import polo_sci4
-        if polo_agent is None:
-            # Check which class exists
-            if hasattr(polo_sci4, 'TargetedAgent'):
-                polo_agent = polo_sci4.TargetedAgent()
-            elif hasattr(polo_sci4, 'RobustPoloAgent'):
-                polo_agent = polo_sci4.RobustPoloAgent()
-            else:
-                 print("Error: neither TargetedAgent nor RobustPoloAgent found in polo_sci4")
-                 return []
-        
-        # Capture the returned paths
-        found_paths = polo_agent.explain(drug_id, disease_id)
-        if not found_paths:
-            found_paths = []
-
-            
-    except Exception as e:
-        print(f"Error in Polo for confidence: {e}")
-        # Fallback to empty if fails
-        found_paths = []
-    finally:
-        os.chdir(original_cwd)
-
     # Process Polo Outputs
-    # Pathway Match
-    # Extract top pathways (formatted as string representations)
-    pathway_list = []
     pathway_score_sum = 0
-    
-    # Gene Influence
     influenced_genes = set()
-    
-    # Rule Reasoning
     rules_fired = []
     rule_score_sum = 0
     
     # Calculate Averages for Final Score
-    avg_pathway = pathway_score_sum / len(found_paths) if found_paths else 0.0
-    # Iterate to populate lists
+    avg_pathway = 0.0
+    
     for item in found_paths[:5]: # Top 5
         # Pathway
-        p_str = " -> ".join(item.get('path', [])) # Simplified
-        pathway_list.append({"path": p_str, "score": item.get('score', 0)})
         pathway_score_sum += item.get('score', 0)
         
         # Genes (simple heuristic: any node not drug/disease/chem/anat)
@@ -350,11 +342,13 @@ def get_confidence_breakdown(drug_id: str, disease_id: str) -> Dict[str, Any]:
             if "VIA" in tag: rule_score_sum += 1.0
             else: rule_score_sum += 0.5
             
-    # Format Genes
-    gene_list = [{"name": g, "score": 0.8} for g in list(influenced_genes)[:10]] # Limit to 10
-    gene_score = min(len(influenced_genes) * 10, 100) / 100.0 # Normalized
+    avg_pathway = pathway_score_sum / len(found_paths) if found_paths else 0.0
     
-    rule_score = min(rule_score_sum * 0.2, 1.0) # Heuristic
+    # Format Genes
+    gene_list = [{"name": g, "score": 0.8} for g in list(influenced_genes)[:10]]
+    gene_score = min(len(influenced_genes) * 10, 100) / 100.0
+    
+    rule_score = min(rule_score_sum * 0.2, 1.0)
 
     # 3. Embedding Similarity
     load_graph_embeddings()
@@ -364,7 +358,6 @@ def get_confidence_breakdown(drug_id: str, disease_id: str) -> Dict[str, Any]:
     if _graph_data and TORCH_AVAILABLE:
         try:
             # Identify Drug Node Type
-            # Try 'Compound' first (Hetionet standard), then others
             drug_node_type = None
             for nt in ['Compound', 'compound', 'Drug', 'drug']:
                 if nt in _graph_data.node_types:
@@ -373,28 +366,28 @@ def get_confidence_breakdown(drug_id: str, disease_id: str) -> Dict[str, Any]:
             
             if drug_node_type and hasattr(_graph_data[drug_node_type], 'x'):
                 emb_matrix = _graph_data[drug_node_type].x
-                did = int(drug_id)
-                if did < len(emb_matrix):
+                # Check if drug_id is int
+                if drug_id.isdigit():
+                    did = int(drug_id)
+                else: 
+                     # Try to find ID or skip
+                     did = -1
+                     
+                if did >= 0 and did < len(emb_matrix):
                     target_emb = emb_matrix[did]
-                    
-                    # Compute Cosine Similarity with ALL drugs
                     sims = F.cosine_similarity(target_emb.unsqueeze(0), emb_matrix)
-                    
-                    # Get top k (exclude self)
-                    top_k = torch.topk(sims, k=6) # Top 6 (self + 5)
-                    
+                    top_k = torch.topk(sims, k=6)
                     indices = top_k.indices.tolist()
                     values = top_k.values.tolist()
                     
                     for i, idx in enumerate(indices):
                         if idx == did: continue
                         similar_drugs.append({
-                            "name": str(idx), # Resolve name if possible
+                            "name": str(idx),
                             "score": float(values[i])
                         })
                         if len(similar_drugs) >= 5: break
                     
-                    # Avg similarity of top 5
                     if similar_drugs:
                         similarity_score = sum(d['score'] for d in similar_drugs) / len(similar_drugs)
         except Exception as e:
@@ -402,28 +395,20 @@ def get_confidence_breakdown(drug_id: str, disease_id: str) -> Dict[str, Any]:
 
     # --- NEW SCORING LOGIC (Weighted + Normalized) ---
     MAX_PATHWAY_SCORE = 0.0056
-    
     W_PATHWAY = 0.05
     W_GENE = 0.60
     W_EMBEDDING = 0.30
     W_RULE = 0.05
 
-    # Calculate raw averages
-    avg_pathway = pathway_score_sum / len(found_paths) if found_paths else 0.0
-    avg_gene = gene_score 
     avg_sim = similarity_score 
     avg_rule = rule_score 
+    avg_gene = gene_score
     
-    # Normalize
-    # Pathway: scaled by max observed score
     norm_pathway = min(avg_pathway / MAX_PATHWAY_SCORE, 1.0)
-    
-    # Gene/Sim/Rule are already ~0-1 (or we can clamp them)
     norm_gene = min(avg_gene, 1.0)
     norm_embedding = min(avg_sim, 1.0)
     norm_rule = min(avg_rule, 1.0)
 
-    # Final Formula
     final_confidence_val = (
         (norm_pathway * W_PATHWAY) +
         (norm_gene * W_GENE) +
@@ -433,10 +418,8 @@ def get_confidence_breakdown(drug_id: str, disease_id: str) -> Dict[str, Any]:
     
     final_confidence = min(final_confidence_val, 100.0)
     
-    # Resolve Names for Details
-    # (Helper function unchanged)
     def resolve(nid):
-        nid = str(nid) # Safety cast for integer IDs
+        nid = str(nid)
         if polo_agent:
             try:
                 info = polo_agent.get_info(nid)
@@ -445,7 +428,6 @@ def get_confidence_breakdown(drug_id: str, disease_id: str) -> Dict[str, Any]:
                 return str(nid)
         return str(nid)
 
-    # Re-construct detailed lists with names
     detailed_pathways = []
     for item in found_paths[:5]:
         named_path = []

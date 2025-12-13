@@ -157,7 +157,7 @@ class RobustPoloAgent:
             return p1 + p2[1:]
         except: return None
 
-    def export_to_json(self, paths, filename="viz_data.json"):
+    def export_to_json(self, paths, filename="viz_data.json", write_file=True):
         elements = {"nodes": [], "edges": []}
         added_nodes = set()
         
@@ -197,9 +197,12 @@ class RobustPoloAgent:
                         "data": {"id": edge_id, "source": src, "target": tgt, "label": rel}
                     })
         
-        with open(filename, "w") as f:
-            json.dump(elements, f, indent=2)
-        print(f"\n   [SAVE] Visualization data saved to '{filename}'")
+        if write_file:
+            with open(filename, "w") as f:
+                json.dump(elements, f, indent=2)
+            print(f"\n   [SAVE] Visualization data saved to '{filename}'")
+            
+        return elements
 
     def print_path_realtime(self, index, path, score, ptype):
         print(f"🔷 MECHANISM {index} [{ptype}]")
@@ -224,7 +227,7 @@ class RobustPoloAgent:
             print(f"      {chain_str}")
         print("")
 
-    def explain(self, drug_input, disease_input):
+    def explain(self, drug_input, disease_input, write_file=True):
         # 1. RESOLVE NAMES TO IDS
         s_clean = self.get_id(drug_input)
         if not s_clean:
@@ -302,7 +305,8 @@ class RobustPoloAgent:
 
         # --- EXPORT ---
         valid_paths.sort(key=lambda x: x['score'], reverse=True)
-        self.export_to_json(valid_paths[:20]) 
+        # Pass write_file param we added to export_to_json
+        self.export_to_json(valid_paths[:20], write_file=write_file) 
         
         print(f"[DONE] Finished. Found {len(valid_paths)} Mechanisms.\n")
         

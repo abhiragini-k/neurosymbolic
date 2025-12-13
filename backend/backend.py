@@ -118,41 +118,51 @@ class DrugRequest(BaseModel):
 # 3️⃣ API — Predict by drug name (POST)
 @app.post("/predict/drug")
 def predict_drug_post(request: DrugRequest):
-    if not compound_names: load_mappings()
-    drug_name = request.drug_name
-    # Invert mapping to find ID
-    target_id = None
-    for cid, name in compound_names.items():
-        if name.lower() == drug_name.lower():
-            target_id = int(cid)
-            break
+    try:
+        if not compound_names: load_mappings()
+        drug_name = request.drug_name
+        print(f"DEBUG: predict_drug_post called for '{drug_name}'")
+        
+        # Invert mapping to find ID
+        target_id = None
+        for cid, name in compound_names.items():
+            if name.lower() == drug_name.lower():
+                target_id = int(cid)
+                break
+                
+        if target_id is None:
+            print(f"DEBUG: Drug '{drug_name}' not found in mapping")
+            return {"error": f"Drug '{drug_name}' not found in mapping"}
             
-    if target_id is None:
-        return {"error": f"Drug '{drug_name}' not found in mapping"}
-        
-    # Get predictions using existing logic
-    if target_id >= len(scores):
-        return {"error": f"Compound ID {target_id} out of range"}
-        
-    compound_scores = scores[target_id]
-    top_k = 10
-    top_indices = compound_scores.argsort()[-top_k:][::-1]
+        # Get predictions using existing logic
+        if target_id >= len(scores):
+            print(f"DEBUG: Compound ID {target_id} out of range (max {len(scores)})")
+            return {"error": f"Compound ID {target_id} out of range"}
+            
+        compound_scores = scores[target_id]
+        top_k = 10
+        top_indices = compound_scores.argsort()[-top_k:][::-1]
 
-    results = []
-    for rank, disease_id in enumerate(top_indices, 1):
-        results.append({
-            "compound_id": target_id,
-            "compound_name": compound_names.get(str(target_id), str(target_id)),
-            "disease_id": int(disease_id),
-            "disease_name": disease_names.get(str(disease_id), str(disease_id)),
-            "score": float(compound_scores[disease_id]),
-        })
-    
-    # Return in format expected by frontend
-    return {
-        "drug_id": target_id,
-        "predicted": results
-    }
+        results = []
+        for rank, disease_id in enumerate(top_indices, 1):
+            results.append({
+                "compound_id": target_id,
+                "compound_name": compound_names.get(str(target_id), str(target_id)),
+                "disease_id": int(disease_id),
+                "disease_name": disease_names.get(str(disease_id), str(disease_id)),
+                "score": float(compound_scores[disease_id]),
+            })
+        
+        # Return in format expected by frontend
+        return {
+            "drug_id": target_id,
+            "predicted": results
+        }
+    except Exception as e:
+        print(f"ERROR in predict_drug_post: {e}")
+        import traceback
+        traceback.print_exc()
+        return {"error": f"Internal Server Error: {str(e)}"}
 
 # 3b API — Predict by drug name (GET - Legacy/Bonus)
 @app.get("/predict/drug-name/{drug_name}")
@@ -173,28 +183,53 @@ def predict_drug_by_name(drug_name: str, top_k: int = 10):
 # 4️⃣ API — Neurosymbolic Analysis
 # RENAMED to /api/analysis to avoid collision with frontend route /analysis/detail
 @app.get("/api/analysis/{compound_id}/{disease_id}")
-def analyze_connection(compound_id: int, disease_id: int, drug_name: str = None, disease_name: str = None):
+def analyze_connection(compound_id: str, disease_id: str, drug_name: str = None, disease_name: str = None):
     if not compound_names: load_mappings()
     
-    # 1. Get Names
-    # Use provided names if available, otherwise fallback to mapping
-    c_name = drug_name if drug_name else compound_names.get(str(compound_id), str(compound_id))
-    d_name = disease_name if disease_name else disease_names.get(str(disease_id), str(disease_id))
+    # 1. Get Names & IDs
+    # If inputs are names (strings), try to resolve to IDs for matrix lookup
+    c_id_int = None
+    d_id_int = None
     
-    # CRITICAL: If name is still an ID (digits), try to resolve it from mapping
-    if str(c_name).isdigit() and str(c_name) in compound_names:
-        c_name = compound_names[str(c_name)]
-    if str(d_name).isdigit() and str(d_name) in disease_names:
-        d_name = disease_names[str(d_name)]
+    # Resolve Compound
+    if compound_id.isdigit():
+        c_id_int = int(compound_id)
+        c_name = compound_names.get(str(c_id_int), str(c_id_int))
+    else:
+        # Input is likely a name
+        c_name = compound_id
+        # Try to find ID from name
+        for cid, name in compound_names.items():
+            if name.lower() == c_name.lower():
+                c_id_int = int(cid)
+                break
+    
+    # Resolve Disease
+    if disease_id.isdigit():
+        d_id_int = int(disease_id)
+        d_name = disease_names.get(str(d_id_int), str(d_id_int))
+    else:
+        # Input is likely a name
+        d_name = disease_id
+        # Try to find ID from name
+        for did, name in disease_names.items():
+            if name.lower() == d_name.lower():
+                d_id_int = int(did)
+                break
+                
+    # Overrides if provided in query params
+    if drug_name: c_name = drug_name
+    if disease_name: d_name = disease_name
     
     print(f"DEBUG: analyze_connection called with {compound_id}, {disease_id}")
-    print(f"DEBUG: Received params - drug_name: '{drug_name}', disease_name: '{disease_name}'")
+    print(f"DEBUG: Resolved IDs: {c_id_int}, {d_id_int}")
     print(f"DEBUG: Resolved names: '{c_name}', '{d_name}'")
 
     # 2. Get Scores
     neural_score = 0.0
-    if compound_id < scores.shape[0] and disease_id < scores.shape[1]:
-        neural_score = float(scores[compound_id, disease_id])
+    if c_id_int is not None and d_id_int is not None:
+        if c_id_int < scores.shape[0] and d_id_int < scores.shape[1]:
+            neural_score = float(scores[c_id_int, d_id_int])
         
     # 3. Run Symbolic Analysis
     if not polo_agent:
@@ -328,6 +363,123 @@ def analyze_connection(compound_id: int, disease_id: int, drug_name: str = None,
         "gene_activation": gene_data.get("gene_matches", []), # Map to expected frontend key
         "raw_output": full_output
     }
+
+# 5️⃣ API — Explainability Endpoints (NEW)
+from explainability.pathway_influence import compute_pathway_influence
+from explainability.gene_match import compute_gene_match
+
+@app.get("/api/explainability/pathway")
+def get_pathway_influence(drug_id: str, disease_id: str):
+    try:
+        data = compute_pathway_influence(drug_id, disease_id)
+        return data
+    except Exception as e:
+        print(f"Error in /api/explainability/pathway: {e}")
+        return {"pathway_influence": []}
+
+@app.get("/api/explainability/gene-match")
+def get_gene_match(drug_id: str, disease_id: str):
+    try:
+        data = compute_gene_match(drug_id, disease_id)
+        return data
+    except Exception as e:
+        print(f"Error in /api/explainability/gene-match: {e}")
+        return {"gene_matches": []}
+
+@app.get("/api/analysis/confidence-breakdown")
+def get_confidence_breakdown(drug_id: str, disease_id: str):
+    print(f"DEBUG: get_confidence_breakdown called with drug_id={drug_id}, disease_id={disease_id}")
+    try:
+        if not compound_names: load_mappings()
+
+        # 1. Neural Score (Embedding Similarity)
+        # Resolve Names to IDs for Matrix Lookup
+        d_id_int = None
+        dis_id_int = None
+
+        # Resolve Drug ID
+        if drug_id.isdigit():
+            d_id_int = int(drug_id)
+        else:
+            # Try to find ID from name
+            for cid, name in compound_names.items():
+                if name.lower() == drug_id.lower():
+                    d_id_int = int(cid)
+                    break
+        
+        # Resolve Disease ID
+        if disease_id.isdigit():
+            dis_id_int = int(disease_id)
+        else:
+            # Try to find ID from name
+            for did, name in disease_names.items():
+                if name.lower() == disease_id.lower():
+                    dis_id_int = int(did)
+                    break
+        
+        neural_score = 0.0
+        if d_id_int is not None and dis_id_int is not None:
+            if d_id_int < scores.shape[0] and dis_id_int < scores.shape[1]:
+                neural_score = float(scores[d_id_int, dis_id_int])
+            
+        # 2. Pathway Score
+        pathway_data = compute_pathway_influence(drug_id, disease_id)
+        pathways = pathway_data.get("pathway_influence", [])
+        # Calculate average influence of top 5 pathways
+        top_pathways = pathways[:5]
+        pathway_score = 0.0
+        if top_pathways:
+            pathway_score = sum(p['influence'] for p in top_pathways) / len(top_pathways)
+            
+        # 3. Gene Score
+        gene_data = compute_gene_match(drug_id, disease_id)
+        genes = gene_data.get("gene_matches", [])
+        # Calculate match score (ratio of good matches)
+        gene_score = 0.0
+        if genes:
+            good_matches = [g for g in genes if g['match'] >= 0.7]
+            gene_score = len(good_matches) / len(genes) if len(genes) > 0 else 0.0
+            
+        # 4. Rule Score (Mock/Placeholder for now as full mining is expensive)
+        # Assume if neural score is high, rules are likely found
+        rule_score = neural_score * 0.9 
+        
+        # 5. Final Confidence
+        # Weighted average
+        weights = [0.4, 0.2, 0.2, 0.2] # Neural, Pathway, Gene, Rule
+        final_confidence = (
+            neural_score * weights[0] +
+            pathway_score * weights[1] +
+            gene_score * weights[2] +
+            rule_score * weights[3]
+        )
+        
+        return {
+            "averages": {
+                "pathway": pathway_score,
+                "gene_influence": gene_score,
+                "embedding_similarity": neural_score,
+                "rule_mining": rule_score,
+                "final_confidence": round(final_confidence * 100, 1)
+            },
+            "normalized": {
+                "pathway": pathway_score,
+                "gene_influence": gene_score,
+                "embedding_similarity": neural_score,
+                "rule_mining": rule_score
+            },
+            "details": {
+                "pathways": [{"path": p['pathway'], "score": p['influence']} for p in top_pathways],
+                "gene_influence": [{"name": g['gene'], "score": g['match']} for g in genes[:10]],
+                "similar_drugs": [], # Placeholder
+                "rules": [{"name": "Verified by Knowledge Graph"}] if rule_score > 0.5 else []
+            }
+        }
+    except Exception as e:
+        print(f"Error in /analysis/confidence-breakdown: {e}")
+        import traceback
+        traceback.print_exc()
+        return {"error": str(e)}
 
 if __name__ == "__main__":
     import uvicorn

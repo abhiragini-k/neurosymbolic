@@ -51,6 +51,15 @@ async def submit_analysis(
     
     return job_model
 
+@router.get("/user", response_model=List[Job], summary="List user jobs", description="Retrieves a list of all analysis jobs submitted by the currently authenticated user, sorted by newest first.")
+async def get_user_jobs(
+    current_user: User = Depends(get_current_user),
+    db=Depends(get_database)
+):
+    jobs_cursor = db["jobs"].find({"user_id": str(current_user.id)}).sort("created_at", -1)
+    jobs = await jobs_cursor.to_list(length=100)
+    return [Job(**job) for job in jobs]
+
 @router.get("/{job_id}", response_model=Job, summary="Get job status", description="Retrieves the current status and results of a specific analysis job. Returns 404 if not found or 403 if the job doesn't belong to the user.")
 async def get_job_status(
     job_id: str,
@@ -68,15 +77,6 @@ async def get_job_status(
         raise HTTPException(status_code=403, detail="Not authorized to view this job")
         
     return Job(**job)
-
-@router.get("/user", response_model=List[Job], summary="List user jobs", description="Retrieves a list of all analysis jobs submitted by the currently authenticated user, sorted by newest first.")
-async def get_user_jobs(
-    current_user: User = Depends(get_current_user),
-    db=Depends(get_database)
-):
-    jobs_cursor = db["jobs"].find({"user_id": str(current_user.id)}).sort("created_at", -1)
-    jobs = await jobs_cursor.to_list(length=100)
-    return [Job(**job) for job in jobs]
 
 @router.websocket("/ws/{job_id}")
 async def websocket_job_status(websocket: WebSocket, job_id: str):
@@ -110,6 +110,9 @@ async def websocket_job_status(websocket: WebSocket, job_id: str):
             
     except WebSocketDisconnect:
         print(f"Client disconnected from job {job_id}")
+
+# Redundant endpoint removed. Handled by confidence.py router.
+# @router.get("/confidence-breakdown") ...
 
 @router.get("/{drug_id}/{disease_id}", summary="Get symbolic analysis and graph data")
 def get_analysis(drug_id: str, disease_id: str):

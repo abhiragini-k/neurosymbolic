@@ -1,20 +1,22 @@
+import api from "@/lib/api";
+
 import { useState, useEffect } from 'react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, Cell, CartesianGrid } from "recharts";
+import { ResponsiveContainer, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Bar, Cell } from 'recharts';
 
 const getColor = (influence) => {
-    if (influence >= 0.8) return "#8B0000"; // Dark Red
-    if (influence >= 0.6) return "#FFA500"; // Orange
-    if (influence >= 0.4) return "#FFD700"; // Yellow
-    if (influence >= 0.2) return "#87CEEB"; // Light Blue
-    return "#0000FF"; // Blue
+    if (influence >= 0.8) return "#8B0000";
+    if (influence >= 0.6) return "#FFA500";
+    if (influence >= 0.4) return "#FFD700";
+    if (influence >= 0.2) return "#87CEEB";
+    return "#0000FF";
 };
 
 const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
         return (
-            <div className="bg-white border rounded p-2 shadow-lg text-black">
-                <p className="font-bold">{label}</p>
-                <p>Influence: {payload[0].value}</p>
+            <div className="bg-white p-2 border border-gray-200 shadow-sm rounded text-xs">
+                <p className="font-semibold">{label}</p>
+                <p>Influence: {payload[0].value.toFixed(3)}</p>
             </div>
         );
     }
@@ -33,27 +35,28 @@ const PathwayInfluenceHeatmap = ({ drugId, diseaseId }) => {
         setLoading(true);
         setError(null);
 
-        const url = `http://localhost:8000/explainability/pathway?drug_id=${encodeURIComponent(drugId)}&disease_id=${encodeURIComponent(diseaseId)}`;
-        console.log("[Heatmap] URL:", url);
-
-        fetch(url)
-            .then(res => {
-                if (!res.ok) throw new Error("Network response was not ok");
-                return res.json();
-            })
-            .then(json => {
-                console.log("[Heatmap] Data:", json);
-                if (json && json.pathway_influence) {
-                    setData(json.pathway_influence);
+        const fetchInfluence = async () => {
+            try {
+                const response = await api.get(`/api/explainability/pathway`, {
+                    params: { drug_id: drugId, disease_id: diseaseId }
+                });
+                console.log("[Heatmap] Data:", response.data);
+                if (response.data && Array.isArray(response.data.pathway_influence)) {
+                    // Filter out invalid entries to prevent Recharts crash
+                    const validData = response.data.pathway_influence.filter(item => item && item.pathway && typeof item.influence === 'number');
+                    setData(validData);
                 } else {
                     setData([]);
                 }
-            })
-            .catch(err => {
+            } catch (err) {
                 console.error("[Heatmap] Error:", err);
-                setError(err.message);
-            })
-            .finally(() => setLoading(false));
+                setError(err.message || "Failed to fetch data");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchInfluence();
     }, [drugId, diseaseId]);
 
     // Render States
@@ -62,44 +65,13 @@ const PathwayInfluenceHeatmap = ({ drugId, diseaseId }) => {
     if (error) return <div className="p-4 border rounded text-red-500">Error: {error}</div>;
     if (data.length === 0) return <div className="p-4 border rounded text-yellow-600">No pathway data found.</div>;
 
-const PathwayInfluenceHeatmap = ({ data }) => {
-    // Use dynamic data or fallback to empty array
-    // Expecting data to have a 'pathway_influence' property
-    const heatmapData = data?.pathway_influence || [];
+    const heatmapData = data;
 
     return (
         <div className="rounded-xl border bg-card text-card-foreground shadow-sm h-full flex flex-col">
             <div className="p-6 pb-2">
                 <h3 className="font-semibold leading-none tracking-tight">Pathway Influence Heatmap</h3>
             </div>
-            <div className="p-4 flex-1 min-h-[300px]">
-                {/* 
-                    Using 99% width/height to avoid resize loop.
-                    Removed sophisticated layout props to ensure basic rendering first.
-                */}
-                <ResponsiveContainer width="99%" height={300}>
-                    <BarChart
-                        layout="vertical"
-                        data={data}
-                        margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                    >
-                        <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-                        <XAxis type="number" domain={[0, 1.1]} />
-                        <YAxis
-                            type="category"
-                            dataKey="pathway"
-                            width={150}
-                            interval={0}
-                            tick={{ fontSize: 11 }}
-                        />
-                        <Tooltip content={<CustomTooltip />} />
-                        <Bar dataKey="influence" barSize={20}>
-                            {data.map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={getColor(entry.influence)} />
-                            ))}
-                        </Bar>
-                    </BarChart>
-                </ResponsiveContainer>
             <div className="p-6 pt-0 h-[300px] w-full">
                 {heatmapData.length > 0 ? (
                     <ResponsiveContainer width="100%" height="100%">
@@ -147,4 +119,3 @@ const PathwayInfluenceHeatmap = ({ data }) => {
 };
 
 export default PathwayInfluenceHeatmap;
-

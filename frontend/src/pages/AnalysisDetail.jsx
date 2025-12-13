@@ -36,9 +36,10 @@ const AnalysisDetail = () => {
                 // disease object comes from location.state and should have compound_id and disease_id
                 // Pass names explicitly to ensure backend uses the correct text for Polo Agent
                 // Fallback to disease.compound_name if drug state is missing (e.g. direct nav or reload)
+                // Use names in the path to ensure Polo Agent can resolve them correctly
                 const drugNameParam = encodeURIComponent(drug || disease.compound_name || "");
                 const diseaseNameParam = encodeURIComponent(disease.disease_name || "");
-                const response = await api.get(`/api/analysis/${disease.compound_id}/${disease.disease_id}?drug_name=${drugNameParam}&disease_name=${diseaseNameParam}`);
+                const response = await api.get(`/api/analysis/${drugNameParam}/${diseaseNameParam}`);
                 setData(response.data);
             } catch (err) {
                 console.error("Analysis failed:", err);
@@ -159,10 +160,10 @@ const AnalysisDetail = () => {
                     {/* Heatmaps Row */}
                     <div className="lg:col-span-12">
                         <div className="flex flex-col lg:flex-row gap-6 pt-6">
-                            <ConfidenceBreakdown score={disease.score} />
+                            <ConfidenceBreakdown drugId={drug} diseaseId={disease.disease_name} />
                             <div className="flex-1 grid gap-6 md:grid-cols-2">
-                                <PathwayInfluenceHeatmap data={data} />
-                                <GeneActivationHeatmap data={data} />
+                                <PathwayInfluenceHeatmap drugId={drug} diseaseId={disease.disease_name} />
+                                <GeneActivationHeatmap drugId={drug} diseaseId={disease.disease_name} />
                             </div>
                         </div>
                     </div>

@@ -1,16 +1,24 @@
-import { useState, useEffect } from 'react';
-import { ArrowUp, ArrowDown, HelpCircle, AlertCircle, CheckCircle, XCircle } from "lucide-react";
+import api from "@/lib/api";
 
-const getMatchColor = (score) => {
-    if (score >= 0.7) return "bg-green-100 text-green-700 border-green-200"; // Good
-    if (score < 0.3) return "bg-red-100 text-red-700 border-red-200"; // Conflict
-    return "bg-yellow-100 text-yellow-700 border-yellow-200"; // Partial
+import { useState, useEffect } from 'react';
+import { ArrowUpIcon, ArrowDownIcon, MinusIcon } from '@heroicons/react/24/solid';
+
+const getTrendIcon = (value) => {
+    if (typeof value === 'string') {
+        if (value.toLowerCase() === 'up') return <ArrowUpIcon className="w-4 h-4 text-green-500" />;
+        if (value.toLowerCase() === 'down') return <ArrowDownIcon className="w-4 h-4 text-red-500" />;
+    }
+    const val = Number(value);
+    if (isNaN(val)) return <MinusIcon className="w-4 h-4 text-gray-400" />;
+    if (val > 0) return <ArrowUpIcon className="w-4 h-4 text-green-500" />;
+    if (val < 0) return <ArrowDownIcon className="w-4 h-4 text-red-500" />;
+    return <MinusIcon className="w-4 h-4 text-gray-400" />;
 };
 
-const getTrendIcon = (val) => {
-    if (val === 1) return <div className="flex items-center text-green-600 font-medium"><ArrowUp className="w-4 h-4 mr-1" /> Up</div>;
-    if (val === -1) return <div className="flex items-center text-red-600 font-medium"><ArrowDown className="w-4 h-4 mr-1" /> Down</div>;
-    return <span className="text-gray-500">Neutral</span>;
+const getMatchColor = (match) => {
+    if (match >= 0.7) return "border-green-500 text-green-700 bg-green-50";
+    if (match >= 0.3) return "border-yellow-500 text-yellow-700 bg-yellow-50";
+    return "border-red-500 text-red-700 bg-red-50";
 };
 
 const GeneActivationHeatmap = ({ drugId, diseaseId }) => {
@@ -24,37 +32,35 @@ const GeneActivationHeatmap = ({ drugId, diseaseId }) => {
         setLoading(true);
         setError(null);
         console.log(`[GeneMatch] Fetching for ${drugId} -> ${diseaseId}`);
-        const url = `http://localhost:8000/explainability/gene-match?drug_id=${encodeURIComponent(drugId)}&disease_id=${encodeURIComponent(diseaseId)}`;
 
-        fetch(url)
-            .then(res => {
-                if (!res.ok) throw new Error("Network response was not ok");
-                return res.json();
-            })
-            .then(json => {
-                console.log("[GeneMatch] Data:", json);
-                if (json && json.gene_matches) {
-                    setRows(json.gene_matches);
+        const fetchGenes = async () => {
+            try {
+                const response = await api.get(`/api/explainability/gene-match`, {
+                    params: { drug_id: drugId, disease_id: diseaseId }
+                });
+                console.log("[GeneMatch] Data:", response.data);
+                if (response.data && Array.isArray(response.data.gene_matches)) {
+                    // Filter out invalid entries
+                    const validRows = response.data.gene_matches.filter(item => item && item.gene);
+                    setRows(validRows);
                 } else {
                     setRows([]);
                 }
-            })
-            .catch(err => {
+            } catch (err) {
                 console.error("[GeneMatch] Error:", err);
-                setError(err.message);
-            })
-            .finally(() => setLoading(false));
+                setError(err.message || "Failed to fetch data");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchGenes();
     }, [drugId, diseaseId]);
 
     if (!drugId || !diseaseId) return <div className="p-4 border rounded">Select Drug & Disease</div>;
     if (loading) return <div className="p-4 border rounded bg-gray-50 animate-pulse">Loading Gene Matches...</div>;
     if (error) return <div className="p-4 border rounded text-red-500">Error: {error}</div>;
     if (rows.length === 0) return <div className="p-4 border rounded text-yellow-600">No gene data found.</div>;
-
-const GeneActivationHeatmap = ({ data }) => {
-    // Use dynamic data or fallback to empty array
-    // Expecting data to have a 'gene_activation' property
-    const heatmapData = data?.gene_activation || [];
 
     return (
         <div className="rounded-xl border bg-card text-card-foreground shadow-sm h-full flex flex-col">
@@ -85,22 +91,6 @@ const GeneActivationHeatmap = ({ data }) => {
                                 </div>
                             </div>
                         ))}
-                        {heatmapData.length > 0 ? (
-                            heatmapData.map((item, index) => (
-                                <div key={index} className="grid grid-cols-4 gap-4 items-center text-sm p-3 rounded-lg border bg-muted/20 hover:bg-muted/40 transition-colors">
-                                    <div className="font-semibold text-left">{item.gene}</div>
-                                    <div className="flex justify-center">{getTrendIcon(item.drug)}</div>
-                                    <div className="flex justify-center">{getTrendIcon(item.disease)}</div>
-                                    <div className="flex justify-center">
-                                        <div className={`px-3 py-1 rounded-full text-xs font-bold border ${getMatchColor(item.match)} shadow-sm min-w-[60px] text-center`}>
-                                            {item.match.toFixed(2)}
-                                        </div>
-                                    </div>
-                                </div>
-                            ))
-                        ) : (
-                            <div className="text-center text-muted-foreground py-4">No gene activation data available</div>
-                        )}
                     </div>
                 </div>
 
@@ -122,4 +112,3 @@ const GeneActivationHeatmap = ({ data }) => {
 };
 
 export default GeneActivationHeatmap;
-

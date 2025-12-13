@@ -47,13 +47,13 @@ if settings.BACKEND_CORS_ORIGINS:
     )
 
 app.include_router(auth.router, prefix="/auth", tags=["authentication"])
-app.include_router(confidence.router, prefix="/analysis", tags=["analysis"])
-app.include_router(analysis.router, prefix="/analysis", tags=["analysis"])
+app.include_router(confidence.router, prefix="/api/analysis", tags=["analysis"])
+app.include_router(analysis.router, prefix="/api/analysis", tags=["analysis"])
 app.include_router(entities.router, prefix="/entities", tags=["entities"])
 app.include_router(predict.router, prefix="/predict", tags=["predictions"])
 
 
-app.include_router(explainability.router, prefix="/explainability", tags=["explainability"])
+app.include_router(explainability.router, prefix="/api/explainability", tags=["explainability"])
 
 # --- NEW ROUTES for PIPELINE ---
 
@@ -143,11 +143,11 @@ def read_root():
 # 4️⃣ API — Neurosymbolic Analysis (Robust Version)
 # Added to match frontend expectation of /api/analysis
 @app.get("/api/analysis/{compound_id}/{disease_id}")
-def analyze_connection(compound_id: int, disease_id: int, drug_name: str = None, disease_name: str = None):
+def analyze_connection(compound_id: str, disease_id: str, drug_name: str = None, disease_name: str = None):
     # 1. Get Names
     # Use provided names if available, otherwise fallback to mapping
     # Note: app.utils has mappings loaded
-    c_name = drug_name if drug_name else utils.compound_id_to_name(str(compound_id))
+    c_name = drug_name if drug_name else utils.drug_id_to_name(str(compound_id))
     d_name = disease_name if disease_name else utils.disease_id_to_name(str(disease_id))
     
     if not c_name: c_name = str(compound_id)
@@ -155,7 +155,7 @@ def analyze_connection(compound_id: int, disease_id: int, drug_name: str = None,
     
     # CRITICAL: If name is still an ID (digits), try to resolve it from mapping
     if str(c_name).isdigit():
-        resolved = utils.compound_id_to_name(str(c_name))
+        resolved = utils.drug_id_to_name(str(c_name))
         if resolved: c_name = resolved
             
     if str(d_name).isdigit():

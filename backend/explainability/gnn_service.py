@@ -1,42 +1,68 @@
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-from torch_geometric.nn import RGCNConv
-from torch_geometric.data import HeteroData
 import os
 import sys
 
+try:
+    import torch
+    import torch.nn as nn
+    import torch.nn.functional as F
+    from torch_geometric.nn import RGCNConv
+    from torch_geometric.data import HeteroData
+    TORCH_AVAILABLE = True
+except ImportError:
+    print("Warning: Torch not available. GNN features will be disabled.")
+    TORCH_AVAILABLE = False
+    # Dummy classes to prevent NameError
+    class nn:
+        class Module: pass
+    class torch:
+        class device:
+            def __init__(self, x): pass
+        def tensor(x, **kwargs): return x
+        def no_grad(): 
+            class Context:
+                def __enter__(self): pass
+                def __exit__(self, *args): pass
+            return Context()
+
 # --- MODEL DEFINITION (Copied from final_codered_rgcn.py to ensure compatibility) ---
-class RGCNLinkPredictor(nn.Module):
-    def __init__(self, in_dim, hid, num_rel, num_bases=8, dropout=0.2, temperature=1.0):
-        super().__init__()
-        self.conv1 = RGCNConv(in_dim, hid, num_rel, num_bases=num_bases)
-        self.conv2 = RGCNConv(hid, hid, num_rel, num_bases=num_bases)
-        self.norm1 = nn.LayerNorm(hid)
-        self.norm2 = nn.LayerNorm(hid)
-        self.relation_emb = nn.Parameter(torch.randn(num_rel, hid) * 0.1)
-        self.dropout = dropout
-        self.temperature = temperature
+if TORCH_AVAILABLE:
+    class RGCNLinkPredictor(nn.Module):
+        def __init__(self, in_dim, hid, num_rel, num_bases=8, dropout=0.2, temperature=1.0):
+            super().__init__()
+            self.conv1 = RGCNConv(in_dim, hid, num_rel, num_bases=num_bases)
+            self.conv2 = RGCNConv(hid, hid, num_rel, num_bases=num_bases)
+            self.norm1 = nn.LayerNorm(hid)
+            self.norm2 = nn.LayerNorm(hid)
+            self.relation_emb = nn.Parameter(torch.randn(num_rel, hid) * 0.1)
+            self.dropout = dropout
+            self.temperature = temperature
 
-    def encode(self, x, ei, et):
-        h = self.conv1(x, ei, et)
-        h = self.norm1(h)
-        h = F.leaky_relu(h, 0.2)
-        h = F.dropout(h, p=self.dropout, training=self.training)
-        h = self.conv2(h, ei, et)
-        h = self.norm2(h)
-        h = F.leaky_relu(h, 0.2)
-        return F.normalize(h, dim=1)
+        def encode(self, x, ei, et):
+            h = self.conv1(x, ei, et)
+            h = self.norm1(h)
+            h = F.leaky_relu(h, 0.2)
+            h = F.dropout(h, p=self.dropout, training=self.training)
+            h = self.conv2(h, ei, et)
+            h = self.norm2(h)
+            h = F.leaky_relu(h, 0.2)
+            return F.normalize(h, dim=1)
 
-    def decode(self, z, edge_index, rel_ids):
-        z_src = z[edge_index[0]]
-        z_dst = z[edge_index[1]]
-        r = self.relation_emb[rel_ids]
-        return (z_src * r * z_dst).sum(dim=1) / self.temperature
+        def decode(self, z, edge_index, rel_ids):
+            z_src = z[edge_index[0]]
+            z_dst = z[edge_index[1]]
+            r = self.relation_emb[rel_ids]
+            return (z_src * r * z_dst).sum(dim=1) / self.temperature
 
-    def forward(self, x, ei, et, pred_edges, rel_ids):
-        z = self.encode(x, ei, et)
-        return self.decode(z, pred_edges, rel_ids)
+        def forward(self, x, ei, et, pred_edges, rel_ids):
+            z = self.encode(x, ei, et)
+            return self.decode(z, pred_edges, rel_ids)
+else:
+    class RGCNLinkPredictor:
+        def __init__(self, *args, **kwargs): pass
+        def __call__(self, *args, **kwargs): return None
+        def eval(self): pass
+        def to(self, device): pass
+        def load_state_dict(self, state): pass
 
 # --- SERVICE CLASS ---
 class GNNService:
@@ -174,6 +200,11 @@ class GNNService:
         if self.model is not None:
             return
 
+        if not TORCH_AVAILABLE:
+            print("GNN Service: Torch not available. Skipping resource load.")
+            self.load_entity_mappings() # Still load mappings if possible
+            return
+
         print("Loading GNN Service resources...")
         if not os.path.exists(self.GRAPH_PATH):
             raise FileNotFoundError(f"Graph not found at {self.GRAPH_PATH}")
@@ -268,83 +299,92 @@ class GNNService:
         return None
 
     def get_gene_importance(self, drug_id_str, disease_id_str):
-        self.load_resources()
-        
-        # 1. Map IDs
-        drug_idx = self.resolve_id(drug_id_str, self.name_to_compound_id, "Drug")
-        disease_idx = self.resolve_id(disease_id_str, self.name_to_disease_id, "Disease")
-        
-        if drug_idx is None or disease_idx is None:
-            return {}
+        try:
+            self.load_resources()
+            
+            if not TORCH_AVAILABLE:
+                return {}
 
+            # 1. Map IDs
+            drug_idx = self.resolve_id(drug_id_str, self.name_to_compound_id, "Drug")
+            disease_idx = self.resolve_id(disease_id_str, self.name_to_disease_id, "Disease")
             
-        # Homogeneous IDs
-        h_drug = drug_idx + self.node_offset['Compound']
-        h_disease = disease_idx + self.node_offset['Disease']
-        
-        # 2. Prepare Input for Saliency
-        x = self.data_homo['x'].clone().detach().to(self.device)
-        x.requires_grad = True # Enable gradient tracking on FEATURES
-        
-        edge_index = self.data_homo['edge_index'].to(self.device)
-        edge_type = self.data_homo['edge_type'].to(self.device)
-        
-        # Edge to predict
-        edge = torch.tensor([[h_drug], [h_disease]], dtype=torch.long, device=self.device)
-        
-        # Relation ID for 'treats'
-        if ('Compound', 'treats', 'Disease') in self.relname2id:
-            rel_id = self.relname2id[('Compound', 'treats', 'Disease')]
-        else:
-            # Fallback
-            rel_id = 0 
-        rel_ids = torch.tensor([rel_id], dtype=torch.long, device=self.device)
-        
-        # 3. Forward Pass
-        # We use a fresh model call to avoid messing up global state
-        # compute score
-        score = self.model(x, edge_index, edge_type, edge, rel_ids)
-        
-        # 4. Backward Pass
-        score.backward()
-        
-        # 5. Extract Gradients for Gene Nodes
-        # x.grad is [NumNodes, NumFeatures]
-        # We want scalar importance per node = L2 norm of gradient
-        with torch.no_grad():
-            node_saliency = x.grad.norm(dim=1) # [NumNodes]
-            
-            # Filter for Genes Only
-            gene_saliency = node_saliency[self.gene_indices]
-            
-            # Normalize to 0-1 range for this query
-            if gene_saliency.max() > 0:
-                gene_saliency = gene_saliency / gene_saliency.max()
+            if drug_idx is None or disease_idx is None:
+                return {}
 
-            # Map to Names
-            # gene_indices list corresponds to HeteroData Gene indices 0..N in order
-            # layout in homo graph is sequential.
-            # So gene_saliency[i] corresponds to Gene ID 'i' (if sorted).
-            # The hetero_to_homo loop iterates data['Gene']. 
-            # PyG nodes are 0-indexed.
-            
-            result_map = {}
-            saliency_list = gene_saliency.tolist()
-            
-            for i, score in enumerate(saliency_list):
-                # i is local Gene index (0..NumGenes)
-                # self.gene_indices[i] gives global homo ID, but our new map is 0-indexed local.
-                # So we just look up 'i' directly in self.gene_id_map
                 
-                if i in self.gene_id_map:
-                    gene_name = self.gene_id_map[i]
-                    result_map[gene_name] = score
-                else:
-                    # Fallback if no name found
-                    # skipping unnamed genes to reduce noise or use ID
-                    pass
+            # Homogeneous IDs
+            h_drug = drug_idx + self.node_offset['Compound']
+            h_disease = disease_idx + self.node_offset['Disease']
             
-            return result_map
+            # 2. Prepare Input for Saliency
+            x = self.data_homo['x'].clone().detach().to(self.device)
+            x.requires_grad = True # Enable gradient tracking on FEATURES
+            
+            edge_index = self.data_homo['edge_index'].to(self.device)
+            edge_type = self.data_homo['edge_type'].to(self.device)
+            
+            # Edge to predict
+            edge = torch.tensor([[h_drug], [h_disease]], dtype=torch.long, device=self.device)
+            
+            # Relation ID for 'treats'
+            if ('Compound', 'treats', 'Disease') in self.relname2id:
+                rel_id = self.relname2id[('Compound', 'treats', 'Disease')]
+            else:
+                # Fallback
+                rel_id = 0 
+            rel_ids = torch.tensor([rel_id], dtype=torch.long, device=self.device)
+            
+            # 3. Forward Pass
+            # We use a fresh model call to avoid messing up global state
+            # compute score
+            score = self.model(x, edge_index, edge_type, edge, rel_ids)
+            
+            # 4. Backward Pass
+            score.backward()
+            
+            # 5. Extract Gradients for Gene Nodes
+            # x.grad is [NumNodes, NumFeatures]
+            # We want scalar importance per node = L2 norm of gradient
+            with torch.no_grad():
+                node_saliency = x.grad.norm(dim=1) # [NumNodes]
+                
+                # Filter for Genes Only
+                gene_saliency = node_saliency[self.gene_indices]
+                
+                # Normalize to 0-1 range for this query
+                if gene_saliency.max() > 0:
+                    gene_saliency = gene_saliency / gene_saliency.max()
+
+                # Map to Names
+                # gene_indices list corresponds to HeteroData Gene indices 0..N in order
+                # layout in homo graph is sequential.
+                # So gene_saliency[i] corresponds to Gene ID 'i' (if sorted).
+                # The hetero_to_homo loop iterates data['Gene']. 
+                # PyG nodes are 0-indexed.
+                
+                result_map = {}
+                saliency_list = gene_saliency.tolist()
+                
+                for i, score in enumerate(saliency_list):
+                    # i is local Gene index (0..NumGenes)
+                    # self.gene_indices[i] gives global homo ID, but our new map is 0-indexed local.
+                    # So we just look up 'i' directly in self.gene_id_map
+                    
+                    if i in self.gene_id_map:
+                        gene_name = self.gene_id_map[i]
+                        result_map[gene_name] = score
+                    else:
+                        # Fallback if no name found
+                        # skipping unnamed genes to reduce noise or use ID
+                        pass
+                
+                return result_map
+        except Exception as e:
+            print(f"ERROR in get_gene_importance: {e}")
+            import traceback
+            traceback.print_exc()
+            return {}
 
 
 # Global Instance

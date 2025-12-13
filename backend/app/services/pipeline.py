@@ -4,8 +4,18 @@ import json
 import numpy as np
 import asyncio
 from typing import Dict, Any, List
-import torch
-import torch.nn.functional as F
+
+try:
+    import torch
+    import torch.nn.functional as F
+    TORCH_AVAILABLE = True
+except ImportError:
+    print("Warning: Torch not available in pipeline. Embedding features will be disabled.")
+    TORCH_AVAILABLE = False
+    class torch:
+        def load(self, *args, **kwargs): return None
+    class F:
+        def cosine_similarity(self, *args, **kwargs): return []
 
 
 # --- Path Configuration ---
@@ -43,6 +53,9 @@ if not os.path.exists(KG_GRAPH_PATH):
 def load_graph_embeddings():
     global _graph_data
     if _graph_data is None:
+        if not TORCH_AVAILABLE:
+            return
+
         if os.path.exists(KG_GRAPH_PATH):
             print(f"Loading Graph Embeddings from {KG_GRAPH_PATH}...")
             # weights_only=False required for PyG HeteroData
@@ -348,7 +361,7 @@ def get_confidence_breakdown(drug_id: str, disease_id: str) -> Dict[str, Any]:
     similarity_score = 0.0
     similar_drugs = []
     
-    if _graph_data:
+    if _graph_data and TORCH_AVAILABLE:
         try:
             # Identify Drug Node Type
             # Try 'Compound' first (Hetionet standard), then others

@@ -5,6 +5,9 @@ import PredictionSummary from "@/components/PredictionSummary";
 import PredictionResults from "@/components/PredictionResults";
 import api from "@/lib/api";
 import { useToast } from "@/components/ui/use-toast";
+import ConfidenceBreakdown from "@/components/ConfidenceBreakdown";
+import PathwayInfluenceHeatmap from "@/components/Heatmaps/PathwayInfluenceHeatmap";
+import GeneActivationHeatmap from "@/components/Heatmaps/GeneActivationHeatmap";
 
 const Analysis = () => {
     const [drug, setDrug] = useState("");
@@ -110,13 +113,16 @@ const Analysis = () => {
 
                     {/* Heatmaps Row */}
                     <div className="lg:col-span-12">
-                        {score !== null && (
+                        {score !== null ? (
                             <div className="flex flex-col lg:flex-row gap-6 pt-6">
                                 <ConfidenceBreakdown drugId={drug} diseaseId={disease} />
 
                                 <div className="flex-1 grid gap-6 md:grid-cols-2">
                                     <PathwayInfluenceHeatmap drugId={drug} diseaseId={disease} />
                                     <GeneActivationHeatmap drugId={drug} diseaseId={disease} />
+                                </div>
+                            </div>
+                        ) : (
                             <div className="h-full flex items-center justify-center rounded-xl border border-dashed border-muted-foreground/30 bg-muted/30 text-muted-foreground text-center p-6 min-h-[400px]">
                                 <div className="max-w-md">
                                     <h3 className="text-lg font-semibold mb-2">Ready to Analyze</h3>

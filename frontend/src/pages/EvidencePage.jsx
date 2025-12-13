@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -15,7 +14,7 @@ const EvidencePage = () => {
 
     if (!drug || !diseaseName) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-screen bg-slate-950 text-slate-50 p-6">
+            <div className="flex flex-col items-center justify-center min-h-screen bg-background text-foreground p-6">
                 <h2 className="text-xl font-bold mb-2">Context Missing</h2>
                 <p className="text-muted-foreground mb-6">Please start from the Analysis page.</p>
                 <Button onClick={() => navigate('/analysis')} variant="outline">
@@ -29,25 +28,25 @@ const EvidencePage = () => {
         {
             title: "Mechanism of Action",
             query: `${drug} ${diseaseName} mechanism of action`,
-            icon: <FlaskConical className="h-5 w-5 text-purple-400" />,
+            icon: <FlaskConical className="h-5 w-5 text-purple-600" />,
             desc: "Understand the biological pathways and interactions."
         },
         {
             title: "Clinical Studies",
             query: `${drug} ${diseaseName} clinical trial results`,
-            icon: <BookOpen className="h-5 w-5 text-blue-400" />,
+            icon: <BookOpen className="h-5 w-5 text-blue-600" />,
             desc: "Review recent clinical trial outcomes and findings."
         },
         {
             title: "Therapeutic Efficacy",
             query: `${drug} treatment efficacy for ${diseaseName}`,
-            icon: <Search className="h-5 w-5 text-green-400" />,
+            icon: <Search className="h-5 w-5 text-green-600" />,
             desc: "Evaluate effectiveness and treatment potential."
         },
         {
             title: "Side Effects & Toxicity",
             query: `${drug} side effects in ${diseaseName} patients`,
-            icon: <ExternalLink className="h-5 w-5 text-red-400" />,
+            icon: <ExternalLink className="h-5 w-5 text-red-600" />,
             desc: "Investigate potential adverse effects/contraindications."
         }
     ];
@@ -65,7 +64,7 @@ const EvidencePage = () => {
     };
 
     return (
-        <div className="min-h-screen bg-slate-950 text-slate-50 p-6 lg:p-10">
+        <div className="min-h-screen bg-background text-foreground p-6 lg:p-10">
             {/* Header */}
             <div className="max-w-4xl mx-auto mb-8">
                 <Button
@@ -87,15 +86,15 @@ const EvidencePage = () => {
             {/* Content Grid */}
             <div className="max-w-4xl mx-auto grid gap-4">
                 {queries.map((item, idx) => (
-                    <Card key={idx} className="bg-slate-900 border-slate-800 hover:border-slate-700 transition-colors">
+                    <Card key={idx} className="bg-card border-border hover:border-sidebar-accent transition-colors shadow-sm">
                         <CardHeader className="pb-3">
                             <div className="flex items-start gap-4">
-                                <div className="p-2 bg-slate-950 rounded-lg border border-slate-800">
+                                <div className="p-2 bg-muted rounded-lg border border-border">
                                     {item.icon}
                                 </div>
                                 <div className="flex-1">
-                                    <CardTitle className="text-lg text-slate-200">{item.title}</CardTitle>
-                                    <CardDescription className="text-slate-400 mt-1">{item.desc}</CardDescription>
+                                    <CardTitle className="text-lg text-foreground">{item.title}</CardTitle>
+                                    <CardDescription className="text-muted-foreground mt-1">{item.desc}</CardDescription>
                                 </div>
                             </div>
                         </CardHeader>
@@ -104,7 +103,7 @@ const EvidencePage = () => {
                                 <Button
                                     size="sm"
                                     variant="secondary"
-                                    className="bg-slate-800 hover:bg-slate-700 text-slate-200"
+                                    className="bg-secondary text-secondary-foreground hover:bg-secondary/80"
                                     onClick={() => openSearch(item.query, 'google')}
                                 >
                                     <Search className="mr-2 h-3 w-3" /> Google Search
@@ -112,7 +111,7 @@ const EvidencePage = () => {
                                 <Button
                                     size="sm"
                                     variant="secondary"
-                                    className="bg-slate-800 hover:bg-slate-700 text-slate-200"
+                                    className="bg-secondary text-secondary-foreground hover:bg-secondary/80"
                                     onClick={() => openSearch(item.query, 'scholar')}
                                 >
                                     <BookOpen className="mr-2 h-3 w-3" /> Google Scholar
@@ -120,7 +119,7 @@ const EvidencePage = () => {
                                 <Button
                                     size="sm"
                                     variant="secondary"
-                                    className="bg-slate-800 hover:bg-slate-700 text-slate-200"
+                                    className="bg-secondary text-secondary-foreground hover:bg-secondary/80"
                                     onClick={() => openSearch(item.query, 'pubmed')}
                                 >
                                     <FlaskConical className="mr-2 h-3 w-3" /> PubMed
@@ -130,7 +129,7 @@ const EvidencePage = () => {
                     </Card>
                 ))}
             </div>
-            <div className="max-w-4xl mx-auto mt-8 text-center text-sm text-slate-500">
+            <div className="max-w-4xl mx-auto mt-8 text-center text-sm text-muted-foreground">
                 <p>Click on the buttons above to open research results in a new tab.</p>
             </div>
         </div>

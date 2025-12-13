@@ -22,7 +22,7 @@ const Header = () => {
                 <Link to="/" className="flex items-center gap-2 text-xl font-bold">
                     <Brain className="h-6 w-6 text-primary" />
                     <span className="bg-gradient-hero bg-clip-text text-transparent">
-                        Neurosymbolic
+                        NeuroPath
                     </span>
                 </Link>
 

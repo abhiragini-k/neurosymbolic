@@ -105,10 +105,11 @@ const Analysis = () => {
                     <div className="lg:col-span-12">
                         {score !== null && (
                             <div className="flex flex-col lg:flex-row gap-6 pt-6">
-                                <ConfidenceBreakdown />
+                                <ConfidenceBreakdown drugId={drug} diseaseId={disease} />
+
                                 <div className="flex-1 grid gap-6 md:grid-cols-2">
-                                    <PathwayInfluenceHeatmap />
-                                    <GeneActivationHeatmap />
+                                    <PathwayInfluenceHeatmap drugId={drug} diseaseId={disease} />
+                                    <GeneActivationHeatmap drugId={drug} diseaseId={disease} />
                                 </div>
                             </div>
                         )}

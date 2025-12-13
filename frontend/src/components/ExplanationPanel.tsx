@@ -92,7 +92,7 @@ const ExplanationPanel = ({ neuralScore, symbolicScore, reasoningChains }: Expla
               <div className="flex items-center justify-between">
                 <span className="text-xs text-muted-foreground">Pathway {idx + 1}</span>
                 <Badge variant="secondary" className="text-xs">
-                  {(chain.confidence * 100).toFixed(0)}% confidence
+                  {(chain.confidence * 100).toFixed(0)} confidence
                 </Badge>
               </div>
             </div>

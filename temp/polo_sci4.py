@@ -362,7 +362,7 @@ class RobustPoloAgent:
 
     def print_path_realtime(self, index, path, score, ptype):
         print(f"🔷 MECHANISM {index} [{ptype}]")
-        print(f"   Specific Score: {score:.4f}")
+        print(f"   Specific Score: {score*100:.4f}")
         
         chain_str = ""
         for j in range(len(path)-1):

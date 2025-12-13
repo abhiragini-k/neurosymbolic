@@ -1,65 +1,73 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+
+import React from 'react';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { ArrowLeft, ExternalLink, FileText, Loader2, AlertCircle } from "lucide-react";
-import axios from 'axios';
+import { ArrowLeft, ExternalLink, Search, BookOpen, FlaskConical } from "lucide-react";
 
 const EvidencePage = () => {
     const { diseaseId } = useParams();
     const navigate = useNavigate();
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [data, setData] = useState(null);
+    const location = useLocation();
 
-    useEffect(() => {
-        const fetchEvidence = async () => {
-            try {
-                setLoading(true);
-                // Using the endpoint identified: /predict/diseases/{disease_id}/candidates
-                const response = await axios.get(`http://127.0.0.1:8000/predict/diseases/${diseaseId}/candidates`);
-                setData(response.data);
-            } catch (err) {
-                console.error("Failed to fetch evidence:", err);
-                setError("Failed to load evidence data. Please try again later.");
-            } finally {
-                setLoading(false);
-            }
-        };
+    // Get params from state or fallback
+    const { drug, diseaseName } = location.state || {};
 
-        if (diseaseId) {
-            fetchEvidence();
-        }
-    }, [diseaseId]);
-
-    if (loading) {
-        return (
-            <div className="flex flex-col items-center justify-center min-h-screen bg-slate-950 text-slate-50">
-                <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
-                <p className="text-muted-foreground">Loading evidence data...</p>
-            </div>
-        );
-    }
-
-    if (error) {
+    if (!drug || !diseaseName) {
         return (
             <div className="flex flex-col items-center justify-center min-h-screen bg-slate-950 text-slate-50 p-6">
-                <AlertCircle className="h-12 w-12 text-destructive mb-4" />
-                <h2 className="text-xl font-bold mb-2">Error</h2>
-                <p className="text-muted-foreground mb-6">{error}</p>
-                <Button onClick={() => navigate(-1)} variant="outline">
+                <h2 className="text-xl font-bold mb-2">Context Missing</h2>
+                <p className="text-muted-foreground mb-6">Please start from the Analysis page.</p>
+                <Button onClick={() => navigate('/analysis')} variant="outline">
                     <ArrowLeft className="mr-2 h-4 w-4" /> Go Back
                 </Button>
             </div>
         );
     }
 
+    const queries = [
+        {
+            title: "Mechanism of Action",
+            query: `${drug} ${diseaseName} mechanism of action`,
+            icon: <FlaskConical className="h-5 w-5 text-purple-400" />,
+            desc: "Understand the biological pathways and interactions."
+        },
+        {
+            title: "Clinical Studies",
+            query: `${drug} ${diseaseName} clinical trial results`,
+            icon: <BookOpen className="h-5 w-5 text-blue-400" />,
+            desc: "Review recent clinical trial outcomes and findings."
+        },
+        {
+            title: "Therapeutic Efficacy",
+            query: `${drug} treatment efficacy for ${diseaseName}`,
+            icon: <Search className="h-5 w-5 text-green-400" />,
+            desc: "Evaluate effectiveness and treatment potential."
+        },
+        {
+            title: "Side Effects & Toxicity",
+            query: `${drug} side effects in ${diseaseName} patients`,
+            icon: <ExternalLink className="h-5 w-5 text-red-400" />,
+            desc: "Investigate potential adverse effects/contraindications."
+        }
+    ];
+
+    const openSearch = (query, site = 'google') => {
+        let url = "";
+        if (site === 'scholar') {
+            url = `https://scholar.google.com/scholar?q=${encodeURIComponent(query)}`;
+        } else if (site === 'pubmed') {
+            url = `https://pubmed.ncbi.nlm.nih.gov/?term=${encodeURIComponent(query)}`;
+        } else {
+            url = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+        }
+        window.open(url, '_blank');
+    };
+
     return (
         <div className="min-h-screen bg-slate-950 text-slate-50 p-6 lg:p-10">
             {/* Header */}
-            <div className="max-w-7xl mx-auto mb-8">
+            <div className="max-w-4xl mx-auto mb-8">
                 <Button
                     variant="ghost"
                     className="mb-4 pl-0 hover:bg-transparent hover:text-primary"
@@ -69,78 +77,61 @@ const EvidencePage = () => {
                 </Button>
 
                 <div className="flex flex-col gap-2">
-                    <h1 className="text-3xl font-bold tracking-tight">Evidence Analysis</h1>
+                    <h1 className="text-3xl font-bold tracking-tight">Research Evidence</h1>
                     <p className="text-muted-foreground">
-                        Top drug candidates for <span className="text-primary font-semibold">{data?.disease_name}</span> based on AI predictions and literature evidence.
+                        Direct access to external research and clinical studies for <span className="text-primary font-semibold">{drug}</span> + <span className="text-primary font-semibold">{diseaseName}</span>.
                     </p>
                 </div>
             </div>
 
             {/* Content Grid */}
-            <div className="max-w-7xl mx-auto grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
-                {data?.candidates?.map((candidate) => (
-                    <Card key={candidate.drug_id} className="bg-slate-900 border-slate-800 flex flex-col h-full">
+            <div className="max-w-4xl mx-auto grid gap-4">
+                {queries.map((item, idx) => (
+                    <Card key={idx} className="bg-slate-900 border-slate-800 hover:border-slate-700 transition-colors">
                         <CardHeader className="pb-3">
-                            <div className="flex justify-between items-start">
-                                <div>
-                                    <CardTitle className="text-xl text-primary">{candidate.drug_name}</CardTitle>
-                                    <CardDescription className="mt-1">Rank #{candidate.rank}</CardDescription>
+                            <div className="flex items-start gap-4">
+                                <div className="p-2 bg-slate-950 rounded-lg border border-slate-800">
+                                    {item.icon}
                                 </div>
-                                <Badge variant="secondary" className="bg-slate-800 text-slate-300">
-                                    Score: {candidate.score.toFixed(4)}
-                                </Badge>
+                                <div className="flex-1">
+                                    <CardTitle className="text-lg text-slate-200">{item.title}</CardTitle>
+                                    <CardDescription className="text-slate-400 mt-1">{item.desc}</CardDescription>
+                                </div>
                             </div>
                         </CardHeader>
-
-                        <CardContent className="flex-1 flex flex-col gap-4">
-                            {/* AI Summary */}
-                            <div className="bg-slate-950/50 p-3 rounded-md border border-slate-800">
-                                <h4 className="text-sm font-semibold mb-2 flex items-center gap-2">
-                                    <FileText className="h-3 w-3 text-blue-400" /> AI Summary
-                                </h4>
-                                <p className="text-sm text-slate-300 leading-relaxed">
-                                    {candidate.summary?.overall_summary || "No summary available."}
-                                </p>
-                            </div>
-
-                            {/* Key Points */}
-                            {candidate.summary?.points && candidate.summary.points.length > 0 && (
-                                <div className="space-y-2">
-                                    <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Key Findings</h4>
-                                    <ul className="text-sm space-y-1 list-disc list-inside text-slate-400">
-                                        {candidate.summary.points.slice(0, 3).map((point, idx) => (
-                                            <li key={idx} className="line-clamp-2">{point}</li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            )}
-
-                            <div className="mt-auto pt-4">
-                                <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">References</h4>
-                                <ScrollArea className="h-24 w-full rounded-md border border-slate-800 bg-slate-950 p-2">
-                                    {candidate.papers && candidate.papers.length > 0 ? (
-                                        <div className="space-y-2">
-                                            {candidate.papers.map((paper, idx) => (
-                                                <a
-                                                    key={idx}
-                                                    href={paper.url}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="block text-xs text-blue-400 hover:text-blue-300 hover:underline truncate"
-                                                >
-                                                    <ExternalLink className="h-3 w-3 inline mr-1" />
-                                                    {paper.title}
-                                                </a>
-                                            ))}
-                                        </div>
-                                    ) : (
-                                        <p className="text-xs text-muted-foreground italic">No papers found.</p>
-                                    )}
-                                </ScrollArea>
+                        <CardContent>
+                            <div className="flex flex-wrap gap-2 pt-2">
+                                <Button
+                                    size="sm"
+                                    variant="secondary"
+                                    className="bg-slate-800 hover:bg-slate-700 text-slate-200"
+                                    onClick={() => openSearch(item.query, 'google')}
+                                >
+                                    <Search className="mr-2 h-3 w-3" /> Google Search
+                                </Button>
+                                <Button
+                                    size="sm"
+                                    variant="secondary"
+                                    className="bg-slate-800 hover:bg-slate-700 text-slate-200"
+                                    onClick={() => openSearch(item.query, 'scholar')}
+                                >
+                                    <BookOpen className="mr-2 h-3 w-3" /> Google Scholar
+                                </Button>
+                                <Button
+                                    size="sm"
+                                    variant="secondary"
+                                    className="bg-slate-800 hover:bg-slate-700 text-slate-200"
+                                    onClick={() => openSearch(item.query, 'pubmed')}
+                                >
+                                    <FlaskConical className="mr-2 h-3 w-3" /> PubMed
+                                </Button>
                             </div>
                         </CardContent>
                     </Card>
                 ))}
+            </div>
+            <div className="max-w-4xl mx-auto mt-8 text-center text-sm text-slate-500">
+                <p>Click on the buttons above to open research results in a new tab.</p>
             </div>
         </div>
     );

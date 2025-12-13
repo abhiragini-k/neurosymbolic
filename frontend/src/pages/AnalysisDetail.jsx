@@ -100,7 +100,7 @@ const AnalysisDetail = () => {
                         </div>
                     </div>
                     <Button
-                        onClick={() => navigate(`/evidence/${disease.disease_id}`)}
+                        onClick={() => navigate(`/evidence/${disease.disease_id}`, { state: { drug: drug, diseaseName: disease.disease_name } })}
                         className="bg-blue-600 hover:bg-blue-700 text-white"
                     >
                         <FileText className="mr-2 h-4 w-4" />

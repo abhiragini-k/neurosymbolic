@@ -8,7 +8,10 @@ import GeneActivationHeatmap from "@/components/Heatmaps/GeneActivationHeatmap";
 import ConfidenceBreakdown from "@/components/ConfidenceBreakdown";
 import api from "@/lib/api";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, FileText } from "lucide-react";
+
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { ChevronDown } from "lucide-react";
 
 const AnalysisDetail = () => {
     const location = useLocation();
@@ -18,6 +21,7 @@ const AnalysisDetail = () => {
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState(null);
     const [error, setError] = useState(null);
+    const [isOpen, setIsOpen] = useState(false);
 
     useEffect(() => {
         if (!drug || !disease) {
@@ -82,26 +86,35 @@ const AnalysisDetail = () => {
             <Header />
 
             <div className="container py-8">
-                <div className="mb-8 flex items-center gap-4">
-                    <Button variant="outline" size="icon" onClick={() => navigate('/analysis')}>
-                        <ArrowLeft className="h-4 w-4" />
-                    </Button>
-                    <div>
-                        <h1 className="text-3xl font-bold">Analysis: {drug} + {disease.disease_name}</h1>
-                        <p className="text-muted-foreground">
-                            Neurosymbolic explanation and pathway analysis
-                        </p>
+                <div className="mb-8 flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-4">
+                        <Button variant="outline" size="icon" onClick={() => navigate('/analysis')}>
+                            <ArrowLeft className="h-4 w-4" />
+                        </Button>
+                        <div>
+                            <h1 className="text-3xl font-bold">Analysis: {drug} + {disease.disease_name}</h1>
+                            <p className="text-muted-foreground">
+                                Neurosymbolic explanation and pathway analysis
+                            </p>
+                        </div>
                     </div>
+                    <Button
+                        onClick={() => navigate(`/evidence/${disease.disease_id}`)}
+                        className="bg-blue-600 hover:bg-blue-700 text-white"
+                    >
+                        <FileText className="mr-2 h-4 w-4" />
+                        Show Evidence
+                    </Button>
                 </div>
 
                 <div className="grid gap-6 lg:grid-cols-12">
                     {/* Knowledge Graph */}
-                    <div className="lg:col-span-7">
+                    <div className="lg:col-span-8">
                         <GraphViewer data={data?.graph} />
                     </div>
 
                     {/* Explanation */}
-                    <div className="lg:col-span-5 space-y-6">
+                    <div className="lg:col-span-4 space-y-6">
                         <ExplanationPanel
                             neuralScore={data?.neural_score || 0.8} // Fallback for demo
                             symbolicScore={data?.symbolic_score || 0.7}
@@ -109,20 +122,38 @@ const AnalysisDetail = () => {
                         />
 
                         {/* Symbolic Rules Display */}
-                        <div className="p-6 shadow-sm border rounded-xl bg-card text-card-foreground border-l-4 border-l-primary">
-                            <h3 className="font-semibold mb-3">Symbolic Rules</h3>
-                            <div className="space-y-2 text-sm text-muted-foreground">
-                                {data?.symbolic_rules && data.symbolic_rules.length > 0 ? (
-                                    data.symbolic_rules.map((rule, idx) => (
-                                        <div key={idx} className="p-2 bg-muted/50 rounded border border-muted">
-                                            {rule}
-                                        </div>
-                                    ))
-                                ) : (
-                                    <p className="italic">No specific symbolic rules generated for this pair.</p>
-                                )}
+                        <Collapsible
+                            open={isOpen}
+                            onOpenChange={setIsOpen}
+                            className="w-full space-y-2"
+                        >
+                            <div className="flex items-center justify-between space-x-4 px-4 py-2 border rounded-lg bg-card text-card-foreground shadow-sm">
+                                <h4 className="text-sm font-semibold">
+                                    Symbolic Rules
+                                </h4>
+                                <CollapsibleTrigger asChild>
+                                    <Button variant="ghost" size="sm" className="w-9 p-0">
+                                        <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
+                                        <span className="sr-only">Toggle</span>
+                                    </Button>
+                                </CollapsibleTrigger>
                             </div>
-                        </div>
+                            <CollapsibleContent className="space-y-2">
+                                <div className="p-6 shadow-sm border rounded-xl bg-card text-card-foreground border-l-4 border-l-primary mt-2">
+                                    <div className="space-y-2 text-sm text-muted-foreground">
+                                        {data?.symbolic_rules && data.symbolic_rules.length > 0 ? (
+                                            data.symbolic_rules.map((rule, idx) => (
+                                                <div key={idx} className="p-2 bg-muted/50 rounded border border-muted">
+                                                    {rule}
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <p className="italic">No specific symbolic rules generated for this pair.</p>
+                                        )}
+                                    </div>
+                                </div>
+                            </CollapsibleContent>
+                        </Collapsible>
                     </div>
 
                     {/* Heatmaps Row */}
@@ -130,8 +161,8 @@ const AnalysisDetail = () => {
                         <div className="flex flex-col lg:flex-row gap-6 pt-6">
                             <ConfidenceBreakdown score={disease.score} />
                             <div className="flex-1 grid gap-6 md:grid-cols-2">
-                                <PathwayInfluenceHeatmap />
-                                <GeneActivationHeatmap />
+                                <PathwayInfluenceHeatmap data={data} />
+                                <GeneActivationHeatmap data={data} />
                             </div>
                         </div>
                     </div>

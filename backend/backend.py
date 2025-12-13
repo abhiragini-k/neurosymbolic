@@ -297,6 +297,25 @@ def analyze_connection(compound_id: int, disease_id: int, drug_name: str = None,
         current_chain_obj["pathway"] = current_nodes
         reasoning_chains.append(current_chain_obj)
 
+    # 4. Get Explainability Data (Heatmaps)
+    from explainability.pathway_influence import compute_pathway_influence
+    from explainability.gene_match import compute_gene_match
+    
+    pathway_data = {"pathway_influence": []}
+    gene_data = {"gene_matches": []}
+    
+    try:
+        print(f"DEBUG: Computing heatmaps for {compound_id} - {disease_id}")
+        pathway_data = compute_pathway_influence(str(compound_id), str(disease_id))
+        print(f"DEBUG: Pathway data keys: {pathway_data.keys()}, items: {len(pathway_data.get('pathway_influence', []))}")
+        
+        gene_data = compute_gene_match(str(compound_id), str(disease_id))
+        print(f"DEBUG: Gene data keys: {gene_data.keys()}, items: {len(gene_data.get('gene_matches', []))}")
+    except Exception as e:
+        print(f"ERROR computing heatmaps: {e}")
+        import traceback
+        traceback.print_exc()
+
     return {
         "compound_name": c_name,
         "disease_name": d_name,
@@ -305,6 +324,8 @@ def analyze_connection(compound_id: int, disease_id: int, drug_name: str = None,
         "symbolic_rules": symbolic_rules,
         "reasoning_chains": reasoning_chains,
         "graph": viz_data,
+        "pathway_influence": pathway_data.get("pathway_influence", []),
+        "gene_activation": gene_data.get("gene_matches", []), # Map to expected frontend key
         "raw_output": full_output
     }
 

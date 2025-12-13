@@ -17,7 +17,9 @@ def compute_pathway_influence(drug_id: str, disease_id: str):
     try:
         with open(pathway_file, 'r') as f:
             pathways = json.load(f)
+        print(f"DEBUG: Loaded {len(pathways)} pathways from {pathway_file}")
     except FileNotFoundError:
+        print(f"ERROR: Pathway file not found at {pathway_file}")
         return {"pathway_influence": []}
 
     # 2. Get Real GNN Importance Scores

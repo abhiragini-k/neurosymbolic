@@ -100,6 +100,23 @@ const Analysis = () => {
                                 onSelect={handlePredictionSelect}
                             />
                         ) : (
+                            <div className="flex items-center justify-center h-full">
+                                <p className="text-muted-foreground text-center">
+                                    Select a drug and disease, then click Analyze to see results
+                                </p>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Heatmaps Row */}
+                    <div className="lg:col-span-12">
+                        {score !== null && (
+                            <div className="flex flex-col lg:flex-row gap-6 pt-6">
+                                <ConfidenceBreakdown drugId={drug} diseaseId={disease} />
+
+                                <div className="flex-1 grid gap-6 md:grid-cols-2">
+                                    <PathwayInfluenceHeatmap drugId={drug} diseaseId={disease} />
+                                    <GeneActivationHeatmap drugId={drug} diseaseId={disease} />
                             <div className="h-full flex items-center justify-center rounded-xl border border-dashed border-muted-foreground/30 bg-muted/30 text-muted-foreground text-center p-6 min-h-[400px]">
                                 <div className="max-w-md">
                                     <h3 className="text-lg font-semibold mb-2">Ready to Analyze</h3>

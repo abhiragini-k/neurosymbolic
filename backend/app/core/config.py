@@ -14,6 +14,9 @@ class Settings(BaseSettings):
     # Database
     MONGODB_URL: str = "mongodb://localhost:27017"
     DATABASE_NAME: str = "drug_repurposing_db"
+
+    OPENAI_API_KEY: str | None = None
+    GOOGLE_API_KEY: str | None = None
     
     # Paths
     # Default to the finalKG/data folder relative to the backend or absolute path
@@ -22,7 +25,9 @@ class Settings(BaseSettings):
     KG_DATA_DIR: str = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))), "finalKG", "data")
     
     # CORS
-    BACKEND_CORS_ORIGINS: List[str] = ["http://localhost:5173", "http://localhost:3000"]
+    # CORS
+    BACKEND_CORS_ORIGINS: List[str] = ["*"]
+
 
     class Config:
         case_sensitive = True

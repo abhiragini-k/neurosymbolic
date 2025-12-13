@@ -13,6 +13,9 @@ router = APIRouter()
 
 # Define paths
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# Navigate up to neurosymbolic, then down to R-GCN/R-GCN-MODEL
+# c:\Users\kabhi\neurosymbolic\R-GCN\R-GCN-MODEL
+MODEL_DIR = os.path.join(os.path.dirname(BASE_DIR), "R-GCN-MODEL")
 # Navigate up to neurosymbolic, then down to R-GCN-MODEL
 # d:\codered\neurosymbolic\R-GCN-MODEL
 MODEL_DIR = os.path.join(os.path.dirname(BASE_DIR), "R-GCN-MODEL")
@@ -136,4 +139,80 @@ def predict_batch(request: BatchPredictionRequest):
              results.append({"compound_id": cid, "error": e.detail})
              
     return {"batch_predictions": results}
+
+from datetime import datetime
+from app.services import pubmed_client, evidence_summarizer
+from app.repositories import evidence_cache
+
+@router.get("/diseases/{disease_id}/candidates", summary="Get top drug candidates for a disease with evidence")
+async def get_disease_candidates(disease_id: int, top_k: int = 10):
+    """
+    Returns top drug candidates for a specific disease, enriched with PubMed evidence and LLM summaries.
+    Process:
+    1. Identify top scoring drugs from the prediction matrix.
+    2. Check cache for evidence.
+    3. If miss, fetch from PubMed and Summarize via LLM.
+    4. Return enriched list.
+    """
+    if scores is None:
+        raise HTTPException(status_code=500, detail="Prediction matrix not loaded")
+        
+    if disease_id >= scores.shape[1]:
+        raise HTTPException(status_code=404, detail=f"Disease ID {disease_id} out of range")
+
+    # 1. Get Top Scores for this Disease (Column-wise)
+    # scores is [Drugs, Diseases]
+    disease_scores = scores[:, disease_id]
+    top_indices = disease_scores.argsort()[-top_k:][::-1]
+    
+    candidates = []
+    
+    # Pre-fetch disease name once
+    disease_name = disease_names.get(str(disease_id), f"Disease {disease_id}")
+    
+    for rank, compound_id in enumerate(top_indices, 1):
+        if compound_id >= len(compound_names):
+             continue # Logic safety
+             
+        compound_id_str = str(compound_id)
+        drug_name = compound_names.get(compound_id_str, f"Drug {compound_id}")
+        score = float(disease_scores[compound_id])
+        
+        # Evidence Pipeline
+        cache = await evidence_cache.get_cached_evidence(compound_id_str, str(disease_id))
+
+        if cache:
+            papers = cache["papers"]
+            summary = cache["summary"]
+        else:
+            papers = await pubmed_client.fetch_papers(drug_name, disease_name)
+
+            if not papers:
+                summary = {"overall_summary": "Evidence unavailable.", "points": []}
+            else:
+                summary = await evidence_summarizer.summarize_evidence(
+                    drug_name, disease_name, papers
+                )
+
+            await evidence_cache.save_evidence({
+                "_id": f"{compound_id_str}::{disease_id}",
+                "drug_id": compound_id_str,
+                "disease_id": str(disease_id),
+                "drug_name": drug_name,
+                "disease_name": disease_name,
+                "papers": papers,
+                "summary": summary,
+                "createdAt": datetime.utcnow(),
+            })
+
+        candidates.append({
+            "rank": rank,
+            "drug_id": int(compound_id),
+            "drug_name": drug_name,
+            "score": score,
+            "papers": papers,
+            "summary": summary
+        })
+
+    return {"disease_id": disease_id, "disease_name": disease_name, "candidates": candidates}
 

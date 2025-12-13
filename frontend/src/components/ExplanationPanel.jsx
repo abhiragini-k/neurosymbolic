@@ -7,31 +7,7 @@ const ExplanationPanel = ({ neuralScore, symbolicScore, reasoningChains }) => {
         <div className="space-y-6">
             <h2 className="text-2xl font-bold">Explanation</h2>
 
-            {/* Neural Explanation */}
-            <Card className="p-6 shadow-card">
-                <div className="flex items-center gap-3 mb-4">
-                    <div className="inline-flex rounded-lg bg-primary/10 p-2">
-                        <Brain className="h-5 w-5 text-primary" />
-                    </div>
-                    <div className="flex-1">
-                        <h3 className="text-lg font-semibold">Neural Explanation</h3>
-                        <div className="flex items-center gap-2 mt-1">
-                            <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
-                                <div
-                                    className="h-full bg-primary transition-all duration-500"
-                                    style={{ width: `${neuralScore * 100}%` }}
-                                />
-                            </div>
-                            <span className="text-sm font-medium">{(neuralScore * 100).toFixed(1)}%</span>
-                        </div>
-                    </div>
-                </div>
-                <p className="text-muted-foreground">
-                    Pattern and structural similarity analysis indicate significant overlap between the drug's
-                    molecular profile and disease-associated biological pathways. The neural network detected
-                    strong correlations in protein interaction networks and gene expression patterns.
-                </p>
-            </Card>
+            {/* Neural Explanation Removed */}
 
             {/* Symbolic Explanation */}
             <Card className="p-6 shadow-card">
@@ -78,7 +54,22 @@ const ExplanationPanel = ({ neuralScore, symbolicScore, reasoningChains }) => {
                                     </div>
                                 ))}
                             </div>
-                            <div className="flex items-center justify-between">
+
+                            {/* Display Pathways/Edges if available */}
+                            {chain.edges && chain.edges.length > 0 && (
+                                <div className="pl-2 border-l-2 border-primary/20 mt-2">
+                                    <p className="text-xs font-semibold text-muted-foreground mb-1">Pathways involved:</p>
+                                    <div className="flex flex-wrap gap-1">
+                                        {chain.edges.map((edge, edgeIdx) => (
+                                            <Badge key={edgeIdx} variant="secondary" className="text-[10px] h-5">
+                                                {edge}
+                                            </Badge>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            <div className="flex items-center justify-between mt-2">
                                 <span className="text-xs text-muted-foreground">Pathway {idx + 1}</span>
                                 <Badge variant="secondary" className="text-xs">
                                     {(chain.confidence * 100).toFixed(0)}% confidence

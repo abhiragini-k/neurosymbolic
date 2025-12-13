@@ -13,9 +13,9 @@ router = APIRouter()
 
 # Define paths
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-# Navigate up to neurosymbolic, then down to R-GCN/R-GCN-MODEL
-# c:\Users\kabhi\neurosymbolic\R-GCN\R-GCN-MODEL
-MODEL_DIR = os.path.join(os.path.dirname(BASE_DIR), "R-GCN", "R-GCN-MODEL")
+# Navigate up to neurosymbolic, then down to R-GCN-MODEL
+# d:\codered\neurosymbolic\R-GCN-MODEL
+MODEL_DIR = os.path.join(os.path.dirname(BASE_DIR), "R-GCN-MODEL")
 PREDICTION_MATRIX_PATH = os.path.join(MODEL_DIR, "compound_disease_predictions.npy")
 
 COMPOUND_MAPPING_PATH = os.path.join(BASE_DIR, "compound_id_to_name.json")
@@ -136,3 +136,4 @@ def predict_batch(request: BatchPredictionRequest):
              results.append({"compound_id": cid, "error": e.detail})
              
     return {"batch_predictions": results}
+

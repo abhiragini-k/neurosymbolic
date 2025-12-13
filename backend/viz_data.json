@@ -1,0 +1,416 @@
+{
+  "nodes": [
+    {
+      "data": {
+        "id": "869",
+        "label": "CBLN1",
+        "type": "Gene"
+      }
+    },
+    {
+      "data": {
+        "id": "GO:0044087",
+        "label": "regulation of cellular component biogenesis",
+        "type": "Biological_Process"
+      }
+    },
+    {
+      "data": {
+        "id": "672",
+        "label": "BRCA1",
+        "type": "Gene"
+      }
+    },
+    {
+      "data": {
+        "id": "2886",
+        "label": "GRB7",
+        "type": "Gene"
+      }
+    },
+    {
+      "data": {
+        "id": "1",
+        "label": "A1BG",
+        "type": "Gene"
+      }
+    },
+    {
+      "data": {
+        "id": "GO:0048646",
+        "label": "anatomical structure formation involved in morphogenesis",
+        "type": "Biological_Process"
+      }
+    },
+    {
+      "data": {
+        "id": "5290",
+        "label": "PIK3CA",
+        "type": "Gene"
+      }
+    },
+    {
+      "data": {
+        "id": "3958",
+        "label": "LGALS3",
+        "type": "Gene"
+      }
+    },
+    {
+      "data": {
+        "id": "GO:0044089",
+        "label": "positive regulation of cellular component biogenesis",
+        "type": "Biological_Process"
+      }
+    },
+    {
+      "data": {
+        "id": "2475",
+        "label": "MTOR",
+        "type": "Gene"
+      }
+    },
+    {
+      "data": {
+        "id": "UBERON:0000020",
+        "label": "sense organ",
+        "type": "Anatomy"
+      }
+    },
+    {
+      "data": {
+        "id": "GO:0007420",
+        "label": "brain development",
+        "type": "Biological_Process"
+      }
+    },
+    {
+      "data": {
+        "id": "675",
+        "label": "BRCA2",
+        "type": "Gene"
+      }
+    },
+    {
+      "data": {
+        "id": "UBERON:0002371",
+        "label": "bone marrow",
+        "type": "Anatomy"
+      }
+    },
+    {
+      "data": {
+        "id": "7157",
+        "label": "TP53",
+        "type": "Gene"
+      }
+    },
+    {
+      "data": {
+        "id": "7083",
+        "label": "TK1",
+        "type": "Gene"
+      }
+    },
+    {
+      "data": {
+        "id": "1956",
+        "label": "EGFR",
+        "type": "Gene"
+      }
+    },
+    {
+      "data": {
+        "id": "GO:0007417",
+        "label": "central nervous system development",
+        "type": "Biological_Process"
+      }
+    },
+    {
+      "data": {
+        "id": "2064",
+        "label": "ERBB2",
+        "type": "Gene"
+      }
+    },
+    {
+      "data": {
+        "id": "GO:0051960",
+        "label": "regulation of nervous system development",
+        "type": "Biological_Process"
+      }
+    },
+    {
+      "data": {
+        "id": "207",
+        "label": "AKT1",
+        "type": "Gene"
+      }
+    },
+    {
+      "data": {
+        "id": "1026",
+        "label": "CDKN1A",
+        "type": "Gene"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "data": {
+        "id": "869-GO:0044087-participates",
+        "source": "869",
+        "target": "GO:0044087",
+        "label": "participates"
+      }
+    },
+    {
+      "data": {
+        "id": "GO:0044087-672-REV_participates",
+        "source": "GO:0044087",
+        "target": "672",
+        "label": "REV_participates"
+      }
+    },
+    {
+      "data": {
+        "id": "672-2886-regulates",
+        "source": "672",
+        "target": "2886",
+        "label": "regulates"
+      }
+    },
+    {
+      "data": {
+        "id": "2886-1-REV_interacts",
+        "source": "2886",
+        "target": "1",
+        "label": "REV_interacts"
+      }
+    },
+    {
+      "data": {
+        "id": "869-GO:0048646-participates",
+        "source": "869",
+        "target": "GO:0048646",
+        "label": "participates"
+      }
+    },
+    {
+      "data": {
+        "id": "GO:0048646-5290-REV_participates",
+        "source": "GO:0048646",
+        "target": "5290",
+        "label": "REV_participates"
+      }
+    },
+    {
+      "data": {
+        "id": "5290-3958-REV_regulates",
+        "source": "5290",
+        "target": "3958",
+        "label": "REV_regulates"
+      }
+    },
+    {
+      "data": {
+        "id": "3958-1-REV_interacts",
+        "source": "3958",
+        "target": "1",
+        "label": "REV_interacts"
+      }
+    },
+    {
+      "data": {
+        "id": "869-GO:0044089-participates",
+        "source": "869",
+        "target": "GO:0044089",
+        "label": "participates"
+      }
+    },
+    {
+      "data": {
+        "id": "GO:0044089-2475-REV_participates",
+        "source": "GO:0044089",
+        "target": "2475",
+        "label": "REV_participates"
+      }
+    },
+    {
+      "data": {
+        "id": "2475-UBERON:0000020-REV_expresses",
+        "source": "2475",
+        "target": "UBERON:0000020",
+        "label": "REV_expresses"
+      }
+    },
+    {
+      "data": {
+        "id": "UBERON:0000020-1-expresses",
+        "source": "UBERON:0000020",
+        "target": "1",
+        "label": "expresses"
+      }
+    },
+    {
+      "data": {
+        "id": "869-GO:0007420-participates",
+        "source": "869",
+        "target": "GO:0007420",
+        "label": "participates"
+      }
+    },
+    {
+      "data": {
+        "id": "GO:0007420-675-REV_participates",
+        "source": "GO:0007420",
+        "target": "675",
+        "label": "REV_participates"
+      }
+    },
+    {
+      "data": {
+        "id": "675-UBERON:0002371-REV_expresses",
+        "source": "675",
+        "target": "UBERON:0002371",
+        "label": "REV_expresses"
+      }
+    },
+    {
+      "data": {
+        "id": "UBERON:0002371-1-expresses",
+        "source": "UBERON:0002371",
+        "target": "1",
+        "label": "expresses"
+      }
+    },
+    {
+      "data": {
+        "id": "869-GO:0044089-participates",
+        "source": "869",
+        "target": "GO:0044089",
+        "label": "participates"
+      }
+    },
+    {
+      "data": {
+        "id": "GO:0044089-7157-REV_participates",
+        "source": "GO:0044089",
+        "target": "7157",
+        "label": "REV_participates"
+      }
+    },
+    {
+      "data": {
+        "id": "7157-7083-REV_interacts",
+        "source": "7157",
+        "target": "7083",
+        "label": "REV_interacts"
+      }
+    },
+    {
+      "data": {
+        "id": "7083-1-REV_interacts",
+        "source": "7083",
+        "target": "1",
+        "label": "REV_interacts"
+      }
+    },
+    {
+      "data": {
+        "id": "869-GO:0007420-participates",
+        "source": "869",
+        "target": "GO:0007420",
+        "label": "participates"
+      }
+    },
+    {
+      "data": {
+        "id": "GO:0007420-1956-REV_participates",
+        "source": "GO:0007420",
+        "target": "1956",
+        "label": "REV_participates"
+      }
+    },
+    {
+      "data": {
+        "id": "1956-2886-interacts",
+        "source": "1956",
+        "target": "2886",
+        "label": "interacts"
+      }
+    },
+    {
+      "data": {
+        "id": "2886-1-REV_interacts",
+        "source": "2886",
+        "target": "1",
+        "label": "REV_interacts"
+      }
+    },
+    {
+      "data": {
+        "id": "869-GO:0007417-participates",
+        "source": "869",
+        "target": "GO:0007417",
+        "label": "participates"
+      }
+    },
+    {
+      "data": {
+        "id": "GO:0007417-2064-REV_participates",
+        "source": "GO:0007417",
+        "target": "2064",
+        "label": "REV_participates"
+      }
+    },
+    {
+      "data": {
+        "id": "2064-2886-interacts",
+        "source": "2064",
+        "target": "2886",
+        "label": "interacts"
+      }
+    },
+    {
+      "data": {
+        "id": "2886-1-REV_interacts",
+        "source": "2886",
+        "target": "1",
+        "label": "REV_interacts"
+      }
+    },
+    {
+      "data": {
+        "id": "869-GO:0051960-participates",
+        "source": "869",
+        "target": "GO:0051960",
+        "label": "participates"
+      }
+    },
+    {
+      "data": {
+        "id": "GO:0051960-207-REV_participates",
+        "source": "GO:0051960",
+        "target": "207",
+        "label": "REV_participates"
+      }
+    },
+    {
+      "data": {
+        "id": "207-1026-interacts",
+        "source": "207",
+        "target": "1026",
+        "label": "interacts"
+      }
+    },
+    {
+      "data": {
+        "id": "1026-1-REV_interacts",
+        "source": "1026",
+        "target": "1",
+        "label": "REV_interacts"
+      }
+    }
+  ]
+}

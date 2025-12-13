@@ -145,77 +145,14 @@ const PredictionSummary = ({
 
 
 
-                <div className="space-y-3">
-                    <div className="flex justify-between">
-                        <Label>Neural vs Symbolic Weight</Label>
-                        <span className="text-sm text-muted-foreground">{weight.toFixed(1)}</span>
-                    </div>
-                    <Slider
-                        value={[weight]}
-                        onValueChange={onWeightChange}
-                        min={0}
-                        max={1}
-                        step={0.1}
-                        className="w-full"
-                    />
-                    <div className="flex justify-between text-xs text-muted-foreground">
-                        <span>Neural</span>
-                        <span>Symbolic</span>
-                    </div>
-                </div>
+                {/* Weight slider removed as per user request */}
 
                 <Button onClick={onAnalyze} className="w-full" size="lg">
                     <Play className="mr-2 h-4 w-4" />
                     Analyze
                 </Button>
 
-                {score !== null && (
-                    <div className="mt-8 pt-6 border-t space-y-4">
-                        <div className="flex flex-col items-center">
-                            <div className="relative w-32 h-32">
-                                <svg className="w-full h-full transform -rotate-90">
-                                    <circle
-                                        cx="64"
-                                        cy="64"
-                                        r="56"
-                                        stroke="currentColor"
-                                        strokeWidth="8"
-                                        fill="none"
-                                        className="text-muted"
-                                    />
-                                    <circle
-                                        cx="64"
-                                        cy="64"
-                                        r="56"
-                                        stroke="currentColor"
-                                        strokeWidth="8"
-                                        fill="none"
-                                        strokeDasharray={`${2 * Math.PI * 56}`}
-                                        strokeDashoffset={`${2 * Math.PI * 56 * (1 - score)}`}
-                                        className="text-primary transition-all duration-1000"
-                                    />
-                                </svg>
-                                <div className="absolute inset-0 flex items-center justify-center">
-                                    <div className="text-center">
-                                        <div className="text-3xl font-bold">{score.toFixed(2)}</div>
-                                        <div className="text-xs text-muted-foreground">Score</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {confidence && (
-                                <div className="mt-4 text-center">
-                                    <div className={`text-lg font-semibold ${confidence.color}`}>
-                                        {confidence.label} Confidence
-                                    </div>
-                                    <p className="text-sm text-muted-foreground mt-2">
-                                        This prediction shows {confidence.label.toLowerCase()} potential for therapeutic efficacy
-                                    </p>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                )}
+                {/* Score display removed as per user request */}
             </div>
         </Card>
     );

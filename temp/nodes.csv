@@ -46566,7 +46566,7 @@ neo4j_id,label,name,identifier,new_id
 46564,Disease,allergic rhinitis,DOID:4481,46564
 46565,Disease,ureter cancer,DOID:11819,46565
 46566,Disease,melanoma,DOID:1909,46566
-46567,Disease,sclerosing cholangitis,DOID:14268,46567F
+46567,Disease,sclerosing cholangitis,DOID:14268,46567
 46568,Disease,breast cancer,DOID:1612,46568
 46569,Disease,glaucoma,DOID:1686,46569
 46570,Disease,epilepsy syndrome,DOID:1826,46570

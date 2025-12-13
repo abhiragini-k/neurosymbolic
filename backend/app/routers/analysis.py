@@ -110,3 +110,18 @@ async def websocket_job_status(websocket: WebSocket, job_id: str):
             
     except WebSocketDisconnect:
         print(f"Client disconnected from job {job_id}")
+
+@router.get("/{drug_id}/{disease_id}", summary="Get symbolic analysis and graph data")
+def get_analysis(drug_id: str, disease_id: str):
+    """
+    Get symbolic rules and graph data for a drug-disease pair.
+    Calls the pipeline service to run polo_sci4 analysis.
+    """
+    from app.services.pipeline import run_analysis
+    
+    result = run_analysis(drug_id, disease_id)
+    
+    if "error" in result:
+        raise HTTPException(status_code=500, detail=result["error"])
+        
+    return result

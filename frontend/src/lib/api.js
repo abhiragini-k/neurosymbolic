@@ -34,4 +34,14 @@ api.interceptors.response.use(
     }
 );
 
+api.predictDrug = async (drugName) => {
+    const response = await api.post('/predict/drug', { drug_name: drugName });
+    return response.data;
+};
+
+api.analyzeDisease = async (diseaseName) => {
+    const response = await api.post('/analyze/disease', { disease_name: diseaseName });
+    return response.data;
+};
+
 export default api;

@@ -1,49 +1,61 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import PredictionSummary from "@/components/PredictionSummary";
-import ExplanationPanel from "@/components/ExplanationPanel";
-import GraphViewer from "@/components/GraphViewer";
-import PathwayInfluenceHeatmap from "@/components/Heatmaps/PathwayInfluenceHeatmap";
-import GeneActivationHeatmap from "@/components/Heatmaps/GeneActivationHeatmap";
-import ConfidenceBreakdown from "@/components/ConfidenceBreakdown";
+import PredictionResults from "@/components/PredictionResults";
+import api from "@/lib/api";
+import { useToast } from "@/components/ui/use-toast";
 
 const Analysis = () => {
     const [drug, setDrug] = useState("");
-    const [disease, setDisease] = useState("");
+    const [disease, setDisease] = useState(""); // Kept for compatibility with PredictionSummary
     const [weight, setWeight] = useState(0.6);
-    const [score, setScore] = useState(null);
-    const [neuralScore, setNeuralScore] = useState(0);
-    const [symbolicScore, setSymbolicScore] = useState(0);
-    const [reasoningChains, setReasoningChains] = useState([]);
+    const [score, setScore] = useState(null); // Kept for compatibility
+    const [predictions, setPredictions] = useState(null);
+    const [loading, setLoading] = useState(false);
 
-    const handleAnalyze = () => {
-        // Simulate analysis with dummy data
-        const baseScore = 0.3 + Math.random() * 0.6;
-        setScore(baseScore);
+    const navigate = useNavigate();
+    const { toast } = useToast();
 
-        const neural = weight * baseScore + (Math.random() * 0.1);
-        const symbolic = (1 - weight) * baseScore + (Math.random() * 0.1);
+    const handleAnalyze = async () => {
+        if (!drug) {
+            toast({
+                title: "Error",
+                description: "Please select or enter a drug name.",
+                variant: "destructive",
+            });
+            return;
+        }
 
-        setNeuralScore(Math.min(neural, 1));
-        setSymbolicScore(Math.min(symbolic, 1));
+        setLoading(true);
+        try {
+            const result = await api.predictDrug(drug);
+            // Enrich predictions with compound_id for downstream use
+            const enrichedPredictions = result.predicted.map(p => ({
+                ...p,
+                compound_id: result.drug_id
+            }));
+            setPredictions(enrichedPredictions);
+            setScore(0.85); // Dummy score to show "Analysis Complete" state in summary if needed
+        } catch (error) {
+            console.error("Prediction failed:", error);
+            toast({
+                title: "Error",
+                description: "Failed to fetch predictions. Please try again.",
+                variant: "destructive",
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
 
-        // Generate dummy reasoning chains
-        const chains = [
-            {
-                pathway: [drug || "Drug", "Protein AMPK", "Gene GLUT4", disease || "Disease"],
-                confidence: 0.85 + Math.random() * 0.1,
-            },
-            {
-                pathway: [drug || "Drug", "Protein mTOR", "Gene IRS1", "Pathway PI3K", disease || "Disease"],
-                confidence: 0.75 + Math.random() * 0.1,
-            },
-            {
-                pathway: [drug || "Drug", "Protein SIRT1", "Gene FOXO1", disease || "Disease"],
-                confidence: 0.65 + Math.random() * 0.1,
-            },
-        ];
-
-        setReasoningChains(chains);
+    const handlePredictionSelect = (prediction) => {
+        navigate('/analysis/detail', {
+            state: {
+                drug: drug,
+                disease: prediction
+            }
+        });
     };
 
     return (
@@ -59,8 +71,8 @@ const Analysis = () => {
                 </div>
 
                 <div className="grid gap-6 lg:grid-cols-12">
-                    {/* Left Column - Prediction */}
-                    <div className="lg:col-span-3">
+                    {/* Left Column - Prediction Inputs */}
+                    <div className="lg:col-span-4">
                         <PredictionSummary
                             drug={drug}
                             disease={disease}
@@ -73,42 +85,25 @@ const Analysis = () => {
                         />
                     </div>
 
-                    {/* Middle Column - Knowledge Graph */}
-                    <div className="lg:col-span-5">
-                        {score !== null ? (
-                            <GraphViewer />
-                        ) : (
-                            <div className="h-full flex items-center justify-center rounded-xl border border-dashed border-muted-foreground/30 bg-muted/30 text-muted-foreground text-center p-6">
-                                Click Analyze to generate and display the knowledge graph
+                    {/* Right Column - Results List */}
+                    <div className="lg:col-span-8">
+                        {loading ? (
+                            <div className="h-full flex items-center justify-center rounded-xl border border-dashed border-muted-foreground/30 bg-muted/30 text-muted-foreground text-center p-6 min-h-[400px]">
+                                <div className="flex flex-col items-center gap-2">
+                                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                                    <p>Running R-GCN Model...</p>
+                                </div>
                             </div>
-                        )}
-                    </div>
-
-                    {/* Right Column - Explanation */}
-                    <div className="lg:col-span-4">
-                        {score !== null ? (
-                            <ExplanationPanel
-                                neuralScore={neuralScore}
-                                symbolicScore={symbolicScore}
-                                reasoningChains={reasoningChains}
+                        ) : predictions ? (
+                            <PredictionResults
+                                predictions={predictions}
+                                onSelect={handlePredictionSelect}
                             />
                         ) : (
-                            <div className="flex items-center justify-center h-full">
-                                <p className="text-muted-foreground text-center">
-                                    Select a drug and disease, then click Analyze to see results
-                                </p>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Heatmaps Row */}
-                    <div className="lg:col-span-12">
-                        {score !== null && (
-                            <div className="flex flex-col lg:flex-row gap-6 pt-6">
-                                <ConfidenceBreakdown />
-                                <div className="flex-1 grid gap-6 md:grid-cols-2">
-                                    <PathwayInfluenceHeatmap />
-                                    <GeneActivationHeatmap />
+                            <div className="h-full flex items-center justify-center rounded-xl border border-dashed border-muted-foreground/30 bg-muted/30 text-muted-foreground text-center p-6 min-h-[400px]">
+                                <div className="max-w-md">
+                                    <h3 className="text-lg font-semibold mb-2">Ready to Analyze</h3>
+                                    <p>Select a drug from the left panel and click "Analyze" to see top candidate diseases for repurposing.</p>
                                 </div>
                             </div>
                         )}

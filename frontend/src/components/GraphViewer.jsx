@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Network, Pill, Activity, Dna, Microscope } from "lucide-react";
 import { useState } from "react";
 
-const GraphViewer = () => {
+const GraphViewer = ({ data }) => {
     const [hoveredNode, setHoveredNode] = useState(null);
 
     const VIEWBOX_WIDTH = 140;
@@ -29,40 +29,9 @@ const GraphViewer = () => {
         (VIEWBOX_HEIGHT - GRAPH_PADDING_TOP - GRAPH_PADDING_BOTTOM);
     const getNodeRadius = (size) => (size / 2) * NODE_SCALE;
 
-    // Define nodes with positions
-    const nodes = [
-        // Center drug
-        { id: "metformin", label: "Metformin", type: "drug", x: 50, y: 20, size: 60 },
-
-        // Primary proteins
-        { id: "ampk", label: "AMPK", type: "protein", x: 30, y: 45, size: 50 },
-        { id: "mtor", label: "mTOR", type: "protein", x: 70, y: 45, size: 50 },
-
-        // Genes
-        { id: "glut4", label: "GLUT4", type: "gene", x: 20, y: 70, size: 45 },
-        { id: "irs1", label: "IRS1", type: "gene", x: 50, y: 65, size: 45 },
-        { id: "foxo1", label: "FOXO1", type: "gene", x: 80, y: 70, size: 45 },
-
-        // Pathway
-        { id: "pi3k", label: "PI3K Pathway", type: "pathway", x: 50, y: 85, size: 40 },
-
-        // Target disease
-        { id: "diabetes", label: "Type 2 Diabetes", type: "disease", x: 50, y: 100, size: 60 },
-    ];
-
-    // Define edges (connections)
-    const edges = [
-        { from: "metformin", to: "ampk", weight: 0.9 },
-        { from: "metformin", to: "mtor", weight: 0.85 },
-        { from: "ampk", to: "glut4", weight: 0.88 },
-        { from: "ampk", to: "irs1", weight: 0.75 },
-        { from: "mtor", to: "irs1", weight: 0.8 },
-        { from: "mtor", to: "foxo1", weight: 0.82 },
-        { from: "glut4", to: "pi3k", weight: 0.85 },
-        { from: "irs1", to: "pi3k", weight: 0.9 },
-        { from: "foxo1", to: "pi3k", weight: 0.78 },
-        { from: "pi3k", to: "diabetes", weight: 0.92 },
-    ];
+    // Use data from props or fallback to empty arrays
+    const nodes = data?.nodes || [];
+    const edges = data?.edges || [];
 
     const getNodeColor = (type) => {
         switch (type) {

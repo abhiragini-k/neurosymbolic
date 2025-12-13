@@ -18,7 +18,11 @@ const getTrendIcon = (val) => {
     return <span className="text-gray-500">Neutral</span>;
 };
 
-const GeneActivationHeatmap = () => {
+const GeneActivationHeatmap = ({ data }) => {
+    // Use dynamic data or fallback to empty array
+    // Expecting data to have a 'gene_activation' property
+    const heatmapData = data?.gene_activation || [];
+
     return (
         <div className="rounded-xl border bg-card text-card-foreground shadow-sm h-full flex flex-col">
             <div className="p-6 pb-4">
@@ -36,18 +40,22 @@ const GeneActivationHeatmap = () => {
 
                     {/* Rows */}
                     <div className="space-y-3">
-                        {data.map((item, index) => (
-                            <div key={index} className="grid grid-cols-4 gap-4 items-center text-sm p-3 rounded-lg border bg-muted/20 hover:bg-muted/40 transition-colors">
-                                <div className="font-semibold text-left">{item.gene}</div>
-                                <div className="flex justify-center">{getTrendIcon(item.drug)}</div>
-                                <div className="flex justify-center">{getTrendIcon(item.disease)}</div>
-                                <div className="flex justify-center">
-                                    <div className={`px-3 py-1 rounded-full text-xs font-bold border ${getMatchColor(item.match)} shadow-sm min-w-[60px] text-center`}>
-                                        {item.match.toFixed(2)}
+                        {heatmapData.length > 0 ? (
+                            heatmapData.map((item, index) => (
+                                <div key={index} className="grid grid-cols-4 gap-4 items-center text-sm p-3 rounded-lg border bg-muted/20 hover:bg-muted/40 transition-colors">
+                                    <div className="font-semibold text-left">{item.gene}</div>
+                                    <div className="flex justify-center">{getTrendIcon(item.drug)}</div>
+                                    <div className="flex justify-center">{getTrendIcon(item.disease)}</div>
+                                    <div className="flex justify-center">
+                                        <div className={`px-3 py-1 rounded-full text-xs font-bold border ${getMatchColor(item.match)} shadow-sm min-w-[60px] text-center`}>
+                                            {item.match.toFixed(2)}
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))}
+                            ))
+                        ) : (
+                            <div className="text-center text-muted-foreground py-4">No gene activation data available</div>
+                        )}
                     </div>
                 </div>
 

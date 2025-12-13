@@ -1,4 +1,6 @@
 from contextlib import asynccontextmanager
+import os
+import sys
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -19,6 +21,7 @@ async def lifespan(app: FastAPI):
     print("Loading Knowledge Graph Mappings...")
     mapping_service.load_mappings()
     utils.load_mappings() # Load ours as well
+    pipeline.initialize_polo() # Pre-load Polo Agent
     print("Mappings Loaded.")
     
     yield
@@ -101,6 +104,8 @@ def predict_drug_pipeline(request: PredictDrugRequest):
         }
         
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/analyze/disease", tags=["pipeline"])
@@ -130,3 +135,138 @@ def analyze_disease_pipeline(request: AnalyzeDiseaseRequest):
 @app.get("/")
 def read_root():
     return {"message": "Welcome to the Neurosymbolic Drug Repurposing Backend"}
+
+# 4️⃣ API — Neurosymbolic Analysis (Robust Version)
+# Added to match frontend expectation of /api/analysis
+@app.get("/api/analysis/{compound_id}/{disease_id}")
+def analyze_connection(compound_id: int, disease_id: int, drug_name: str = None, disease_name: str = None):
+    # 1. Get Names
+    # Use provided names if available, otherwise fallback to mapping
+    # Note: app.utils has mappings loaded
+    c_name = drug_name if drug_name else utils.compound_id_to_name(str(compound_id))
+    d_name = disease_name if disease_name else utils.disease_id_to_name(str(disease_id))
+    
+    if not c_name: c_name = str(compound_id)
+    if not d_name: d_name = str(disease_id)
+    
+    # CRITICAL: If name is still an ID (digits), try to resolve it from mapping
+    if str(c_name).isdigit():
+        resolved = utils.compound_id_to_name(str(c_name))
+        if resolved: c_name = resolved
+            
+    if str(d_name).isdigit():
+        resolved = utils.disease_id_to_name(str(d_name))
+        if resolved: d_name = resolved
+    
+    print(f"DEBUG: analyze_connection called with {compound_id}, {disease_id}")
+    print(f"DEBUG: Received params - drug_name: '{drug_name}', disease_name: '{disease_name}'")
+    print(f"DEBUG: Resolved names: '{c_name}', '{d_name}'")
+
+    # 2. Run Symbolic Analysis via Pipeline
+    # We need to temporarily set LATEST_DRUG_ID if we want to use the existing pipeline structure,
+    # or better, call a direct method if available. 
+    # pipeline.run_analysis uses LATEST_DRUG_ID internally for the drug ID, but takes disease_id as arg.
+    # However, pipeline.run_analysis calls polo_agent.explain(drug_name, disease_name).
+    # Let's see pipeline.run_analysis implementation.
+    
+    # Actually, let's just call the polo agent directly here to be safe and robust, 
+    # mirroring the logic I wrote in backend.py.
+    
+    if not pipeline.polo_agent:
+        return {"error": "Polo Agent not active"}
+        
+    import io
+    from contextlib import redirect_stdout
+    import json
+    
+    output_buffer = io.StringIO()
+    viz_data = {"nodes": [], "edges": []}
+    
+    try:
+        cwd = os.getcwd()
+        os.chdir(pipeline.TEMP_DIR) # Switch to temp for file output
+        
+        print(f"DEBUG: Calling polo_agent.explain('{c_name}', '{d_name}')")
+        
+        with redirect_stdout(output_buffer):
+            # Pass NAMES directly
+            pipeline.polo_agent.explain(c_name, d_name)
+            
+        # Read generated JSON
+        if os.path.exists("viz_data.json"):
+            with open("viz_data.json", "r") as f:
+                viz_data = json.load(f)
+                
+        os.chdir(cwd)
+    except Exception as e:
+        os.chdir(cwd)
+        import traceback
+        traceback.print_exc()
+        return {"error": str(e)}
+        
+    # Parse text output for rules/chains
+    full_output = output_buffer.getvalue()
+    
+    lines = full_output.split('\n')
+    symbolic_rules = []
+    reasoning_chains = []
+    
+    current_chain_obj = {"pathway": [], "edges": [], "confidence": 0.0}
+    current_nodes = []
+    
+    import re
+    score_pattern = re.compile(r"Specific Score: ([\d.]+)")
+    arrow_pattern = re.compile(r"\s+(?:--\[|---\[|<---\[)(.+?)(?:\]-->|\]---|\]---)\s+")
+
+    for line in lines:
+        clean = line.strip()
+        if not clean: continue
+        
+        if clean.startswith("🔷 MECHANISM"):
+            if current_nodes:
+                current_chain_obj["pathway"] = current_nodes
+                reasoning_chains.append(current_chain_obj)
+            
+            current_chain_obj = {"pathway": [], "edges": [], "confidence": 0.0}
+            current_nodes = []
+            symbolic_rules.append(clean)
+            
+        elif "Specific Score:" in clean:
+            match = score_pattern.search(clean)
+            if match:
+                try:
+                    current_chain_obj["confidence"] = float(match.group(1))
+                except: pass
+            symbolic_rules.append(clean)
+            
+        elif "-->" in clean or "<--" in clean or "---" in clean:
+            symbolic_rules.append(clean)
+            parts = arrow_pattern.split(clean)
+            if len(parts) >= 3:
+                u_n = parts[0].strip()
+                rel = parts[1].strip()
+                rest = parts[2].strip()
+                if " (" in rest and rest.endswith(")"):
+                    v_n = rest.rsplit(" (", 1)[0]
+                else:
+                    v_n = rest
+                
+                if not current_nodes:
+                    current_nodes.append(u_n)
+                current_nodes.append(v_n)
+                current_chain_obj["edges"].append(rel)
+            
+    if current_nodes:
+        current_chain_obj["pathway"] = current_nodes
+        reasoning_chains.append(current_chain_obj)
+
+    return {
+        "compound_name": c_name,
+        "disease_name": d_name,
+        "neural_score": 0.0, # Placeholder
+        "symbolic_score": 0.95, 
+        "symbolic_rules": symbolic_rules,
+        "reasoning_chains": reasoning_chains,
+        "graph": viz_data,
+        "raw_output": full_output
+    }

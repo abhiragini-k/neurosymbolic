@@ -1,102 +1,145 @@
 # Neurosymbolic Drug Repurposing Backend
 
-This is the backend service for the Neurosymbolic Drug Repurposing platform. It provides API endpoints for entity resolution, drug repurposing analysis (using R-GCN and symbolic reasoning), and job management.
+The **Neurosymbolic Drug Repurposing Backend** is a high-performance, hybrid AI system designed to predict and explain potential drug-disease associations. It uniquely combines the predictive power of **Deep Learning (Relational Graph Convolutional Networks - R-GCN)** with the interpretability of **Symbolic Reasoning (LLM-driven Logic)** to provide transparent and actionable insights for biomedical researchers.
 
-## Prerequisites
+## 🚀 Key Capabilities
 
-- Python 3.9+
-- MongoDB (running locally or a cloud instance like MongoDB Atlas)
-- Node.js (if you plan to run the frontend, though not strictly required for this backend)
+1.  **Neural Prediction (R-GCN)**:
+    -   Utilizes a trained R-GCN model to predict the probability of links between compounds and diseases within a massive Knowledge Graph (KG).
+    -   Provides fast, matrix-based inference for thousands of potential drug candidates.
 
-## Installation
+2.  **Symbolic Explanation (Polo Agent)**:
+    -   Deployment of an agentic Large Language Model (LLM) framework ("Polo") to traverse the KG.
+    -   Extracts **reasoning chains** (e.g., *Drug A inhibits Gene B, which is associated with Disease C*).
+    -   Synthesizes these paths into human-readable logical rules.
 
-1.  **Navigate to the backend directory:**
+3.  **Explainability & Visualization**:
+    -   **GNNExplainer Integration**: Generates heatmaps showing which biological pathways and genes contributed most to a specific prediction.
+    -   **Confidence Scoring**: Calculates a transparent confidence score broken down by Embedding Similarity, Pathway Influence, Gene Matching, and Symbolic Rule verification.
+
+---
+
+## 🛠️ Architecture Pipeline
+
+The backend functions as a unified API service coordinating three main layers:
+
+1.  **Layer 1: Neural Inference Engine**
+    -   Loads a pre-computed prediction matrix (`compound_disease_predictions.npy`) into memory at startup.
+    -   Performs instant O(1) lookups for drug-disease scores.
+
+2.  **Layer 2: Symbolic Logic Layer**
+    -   On request, the **Polo Agent** (`polo_sci4.py`) performs a targeted search in the Neo4j/KV-store database.
+    -   Retrieves multi-hop paths connecting the drug and disease.
+
+3.  **Layer 3: Explainability Service**
+    -   Computes feature importance using GNN gradients.
+    -   Aggregates scores to identify top influential biological pathways.
+
+---
+
+## 📦 Prerequisites
+
+Ensure your environment meets the following requirements:
+
+-   **Operating System**: Windows / Linux / macOS
+-   **Python**: Version 3.9 or higher
+-   **Database**:
+    -   **MongoDB**: For storing job status, caches, and user data.
+    -   *(Optional for Inference)*: Connection to the Knowledge Graph data source (if running full rule mining).
+-   **Files**:
+    -   `compound_disease_predictions.npy` (R-GCN Output Matrix)
+    -   `compound_id_to_name.json` (ID Mapping)
+    -   `disease_id_to_name.json` (ID Mapping)
+
+---
+
+## ⚙️ Installation & Setup
+
+1.  **Clone the Repository**
     ```bash
-    cd backend
+    git clone <repository-url>
+    cd neurosymbolic/backend
     ```
 
-2.  **Create a virtual environment:**
+2.  **Create a Virtual Environment**
+    It is recommended to use a clean environment to avoid dependency conflicts.
     ```bash
     python -m venv venv
     ```
+    *Activate:*
+    -   **Windows:** `.\venv\Scripts\activate`
+    -   **Mac/Linux:** `source venv/bin/activate`
 
-3.  **Activate the virtual environment:**
-    -   **Windows:**
-        ```bash
-        .\venv\Scripts\activate
-        ```
-    -   **macOS/Linux:**
-        ```bash
-        source venv/bin/activate
-        ```
-
-4.  **Install dependencies:**
+3.  **Install Dependencies**
     ```bash
     pip install -r requirements.txt
     ```
 
-## Configuration
-
-1.  Create a `.env` file in the `backend` root (if it doesn't already exist).
-2.  Add the following variables:
-
+4.  **Environment Configuration**
+    Create a `.env` file in the `backend` directory with your secrets:
     ```env
-    PROJECT_NAME="Neurosymbolic Drug Repurposing Backend"
-    MONGODB_URL="mongodb+srv://<user>:<password>@<cluster>.mongodb.net/?retryWrites=true&w=majority"
+    # MongoDB Connection
+    MONGODB_URL="mongodb://localhost:27017"
     DATABASE_NAME="drug_repurposing_db"
-    SECRET_KEY="your-super-secret-key-change-this-in-production"
-    ACCESS_TOKEN_EXPIRE_MINUTES=10080
+
+    # API Security (Optional for local dev)
+    SECRET_KEY="your-secret-key"
     ```
 
-    *Note: Ensure your `MONGODB_URL` is valid and accessible.*
+---
 
-## Running the Application
+## 🏃‍♂️ Running the Server
 
-Start the development server using `uvicorn`:
+This backend leverages **FastAPI** for high throughput.
 
+### Production Mode (Recommended)
+Run the V2 backend entry point directly:
 ```bash
-uvicorn app.main:app --reload
+python backend.py
+```
+> This starts the server on `http://0.0.0.0:8000`.
+
+### Development Mode
+If you need hot-reloading during development:
+```bash
+uvicorn backend:app --reload --host 0.0.0.0 --port 8000
 ```
 
-The API will be available at `http://127.0.0.1:8000`.
+---
 
-## API Documentation
+## 🔌 API Documentation
 
-Interactive API documentation (Swagger UI) is automatically generated and available at:
+Once the server is running, you can access the interactive Swagger UI at:
+👉 **http://localhost:8000/docs**
 
--   **Swagger UI:** [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
--   **ReDoc:** [http://127.0.0.1:8000/redoc](http://127.0.0.1:8000/redoc)
+### Core Endpoints
 
-## Key Features & Endpoints
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| **POST** | `/predict/drug` | **Main Pipeline Entry**. Input a drug name to get top disease candidates. |
+| **GET** | `/predict/drug/{id}` | Get top predictions for a specific Compound ID. |
+| **GET** | `/api/analysis/{cid}/{did}` | Trigger full **Neurosymbolic Analysis** (Neural + Symbolic + Graph). |
+| **GET** | `/api/explainability/pathway` | Retrieve specific pathway influence scores for heatmaps. |
 
-### 1. Authentication
-Secure access using OAuth2 with Password correctness.
--   `POST /auth/register`: Create a new user account.
--   `POST /auth/login`: Login to receive an access token.
+---
 
-### 2. Entity Resolution
-Map text queries to Knowledge Graph entities.
--   `GET /entities/resolve`: Check if a drug or disease exists in the database.
+## 🧩 Project Structure
 
-### 3. Analysis Workflow
-Submit long-running analysis jobs.
--   `POST /analysis/submit`: Submit an entity (e.g., "Metformin") for repurposing analysis.
--   `GET /analysis/{job_id}`: Check the status and get results of a job.
--   `WS /analysis/ws/{job_id}`: (Optional) WebSocket for real-time status updates.
+-   **`backend.py`**: **Main Entry Point (V2)**. Contains the API routes and initializes the Polo Agent.
+-   **`app/`**: Contains modularized service logic (Legacy/Shared).
+-   **`explainability/`**: Modules for GNNExplainer and heatmap generation (`pathway_influence.py`, `gene_match.py`).
+-   **`polo_sci4.py`**: The core Symbolic Agent logic.
+-   **`requirements.txt`**: Python package dependencies.
 
-## Testing
+---
 
-You can use the provided helper script to check the MongoDB connection:
+## 🤝 Contribution
 
-```bash
-python check_mongo_conn.py
-```
+1.  Fork the repository.
+2.  Create a feature branch (`git checkout -b feature/amazing-feature`).
+3.  Commit your changes.
+4.  Open a Pull Request.
 
-## Project Structure
+---
 
--   `app/`: Main application source code.
-    -   `core/`: Configuration and database logic.
-    -   `routers/`: API route definitions.
-    -   `models/`: Pydantic data models.
-    -   `services/`: Business logic (Analysis, Mapping, Model Inference).
--   `finalKG/`: Directory containing the Knowledge Graph data (`nodes.csv`, etc.).
+**© 2025 Neurosymbolic Drug Repurposing Project**

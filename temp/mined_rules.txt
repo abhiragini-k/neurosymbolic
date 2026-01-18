@@ -1,0 +1,100 @@
+Assuming rdf:type as type relation
+Loading files... 
+  Starting graph_dump.tsv
+  Finished graph_dump.tsv, still running: 0
+Loaded 2250197 facts in 16 s using 1246 MB
+Using Support as pruning metric with minimum threshold 2.0
+Using recursivity limit 3
+Lazy mining assistant that stops counting when the denominator gets too high
+Filtering on standard confidence with minimum threshold 0.01
+Filtering on PCA confidence with minimum threshold 0.01
+Constants in the arguments of relations are disabled
+Lossless (query refinement) heuristics enabled
+MRT calls: 0
+Starting the mining phase... Using 16 threads
+Rule	Head Coverage	Std Confidence	PCA Confidence	Positive Examples	Body size	PCA Body size	Functional variable
+?a  associates  ?b   => ?a  upregulates  ?b	0.001302932	0.012833716	0.0136859	162	12623	11837	?b
+?a  expresses  ?b   => ?a  upregulates  ?b	0.681626252	0.160997099	0.165493082	84750	526407	512106	?b
+?a  expresses  ?b   => ?a  downregulates  ?b	0.411682511	0.10242265	0.106881821	53916	526407	504445	?b
+?b  regulates  ?a   => ?a  regulates  ?b	0.012714927	0.012714927	0.0170871	3378	265672	197693	?b
+?a  upregulates  ?b   => ?a  expresses  ?b	0.160997099	0.681626252	0.683776544	84750	124335	123944	?b
+?a  downregulates  ?b   => ?a  expresses  ?b	0.10242265	0.411682511	0.412706675	53916	130965	130640	?b
+?a  palliates  ?f  ?b  resembles  ?f   => ?a  palliates  ?b	0.228205128	0.099109131	0.099109131	89	898	898	?a
+?a  palliates  ?f  ?f  resembles  ?b   => ?a  palliates  ?b	0.235897436	0.105747126	0.105747126	92	870	870	?a
+?a  includes  ?f  ?b  resembles  ?f   => ?a  includes  ?b	0.346938776	0.151271186	0.315092674	357	2360	1133	?b
+?a  includes  ?e  ?e  resembles  ?b   => ?a  includes  ?b	0.351797862	0.163875057	0.312338223	362	2209	1159	?b
+?f  palliates  ?b  ?a  resembles  ?f   => ?a  palliates  ?b	0.338461538	0.080097087	0.279069767	132	1648	473	?a
+?e  palliates  ?b  ?e  resembles  ?a   => ?a  palliates  ?b	0.317948718	0.067982456	0.227106227	124	1824	546	?a
+?b  resembles  ?f  ?a  treats  ?f   => ?a  treats  ?b	0.290066225	0.105643994	0.105643994	219	2073	2073	?a
+?f  resembles  ?b  ?a  treats  ?f   => ?a  treats  ?b	0.294039735	0.113904566	0.113904566	222	1949	1949	?a
+?a  palliates  ?f  ?b  resembles  ?f   => ?a  treats  ?b	0.018543046	0.0155902	0.04778157	14	898	293	?a
+?a  palliates  ?f  ?f  resembles  ?b   => ?a  treats  ?b	0.017218543	0.014942529	0.037681159	13	870	345	?a
+?f  palliates  ?b  ?a  resembles  ?f   => ?a  treats  ?b	0.022516556	0.010315534	0.054487179	17	1648	312	?a
+?a  resembles  ?f  ?f  treats  ?b   => ?a  treats  ?b	0.353642384	0.165530068	0.417840376	267	1613	639	?a
+?e  resembles  ?a  ?e  treats  ?b   => ?a  treats  ?b	0.358940397	0.142706688	0.356110381	271	1899	761	?a
+?b  associates  ?f  ?a  binds  ?f   => ?a  treats  ?b	0.614569536	0.016873954	0.049488055	464	27498	9376	?a
+?f  presents  ?b  ?a  resembles  ?f   => ?a  presents  ?b	0.541257075	0.235851506	0.235851506	1817	7704	7704	?b
+?b  associates  ?f  ?a  upregulates  ?f   => ?a  treats  ?b	0.362913907	0.013319074	0.041692027	274	20572	6572	?a
+?b  associates  ?f  ?a  downregulates  ?f   => ?a  treats  ?b	0.339072848	0.01411635	0.043858146	256	18135	5837	?a
+?e  presents  ?b  ?e  resembles  ?a   => ?a  presents  ?b	0.54512958	0.204492122	0.204492122	1830	8949	8949	?b
+?f  localizes  ?b  ?a  resembles  ?f   => ?a  localizes  ?b	0.591060522	0.211504073	0.211504073	2129	10066	10066	?b
+?e  localizes  ?b  ?e  resembles  ?a   => ?a  localizes  ?b	0.583287063	0.18650688	0.18650688	2101	11265	11265	?b
+?a  treats  ?f  ?b  treats  ?f   => ?a  resembles  ?b	0.054204012	0.026780066	0.03969577	381	14227	9598	?b
+?b  palliates  ?f  ?a  treats  ?f   => ?a  resembles  ?b	0.003556694	0.010351967	0.012800819	25	2415	1953	?b
+?a  palliates  ?f  ?b  palliates  ?f   => ?a  resembles  ?b	0.028026746	0.037964926	0.051624738	197	5189	3816	?b
+?a  presents  ?f  ?b  presents  ?f   => ?a  resembles  ?b	0.07582871	0.046440708	0.056738344	533	11477	9394	?b
+?a  localizes  ?f  ?b  localizes  ?f   => ?a  resembles  ?b	0.075117371	0.050482838	0.061167748	528	10459	8632	?b
+?a  resembles  ?f  ?b  resembles  ?f   => ?a  resembles  ?b	0.724427372	0.165475107	0.185271431	5092	30772	27484	?b
+?a  associates  ?f  ?b  associates  ?f   => ?a  resembles  ?b	0.051643192	0.039302728	0.048764105	363	9236	7444	?b
+?f  resembles  ?b  ?a  resembles  ?f   => ?a  resembles  ?b	0.725138711	0.327045236	0.327045236	5097	15585	15585	?b
+?e  treats  ?a  ?e  treats  ?b   => ?a  resembles  ?b	0.016929862	0.103930131	0.116438356	119	1145	1022	?b
+?e  palliates  ?a  ?e  treats  ?b   => ?a  resembles  ?b	0.000853606	0.030769231	0.038461538	6	195	156	?b
+?e  palliates  ?a  ?e  palliates  ?b   => ?a  resembles  ?b	0.004979371	0.103550296	0.117056856	35	338	299	?b
+?e  palliates  ?b  ?e  treats  ?a   => ?a  resembles  ?b	0.001564945	0.056410256	0.061111111	11	195	180	?b
+?e  includes  ?a  ?e  includes  ?b   => ?a  resembles  ?b	0.119931711	0.132672332	0.182546557	843	6354	4618	?b
+?e  resembles  ?a  ?e  resembles  ?b   => ?a  resembles  ?b	0.730544885	0.160629379	0.160629379	5135	31968	31968	?b
+?f  associates  ?b  ?a  palliates  ?f   => ?a  binds  ?b	0.05617492	0.012253054	0.041269841	650	53048	15750	?b
+?f  binds  ?b  ?a  resembles  ?f   => ?a  binds  ?b	0.398669087	0.174220107	0.174220107	4613	26478	26478	?b
+?a  associates  ?f  ?b  upregulates  ?f   => ?a  localizes  ?b	0.108273182	0.018957807	0.090319592	390	20572	4318	?b
+?a  associates  ?f  ?b  downregulates  ?f   => ?a  localizes  ?b	0.104664076	0.02078853	0.087349398	377	18135	4316	?b
+?a  associates  ?f  ?b  expresses  ?f   => ?a  localizes  ?b	0.452526374	0.102271301	0.103887827	1630	15938	15690	?b
+?a  binds  ?f  ?b  interacts  ?f   => ?a  binds  ?b	0.113473339	0.028194116	0.098028968	1313	46570	13394	?b
+?a  binds  ?f  ?f  interacts  ?b   => ?a  binds  ?b	0.123498401	0.010467944	0.055325409	1429	136512	25829	?b
+?e  binds  ?b  ?e  resembles  ?a   => ?a  binds  ?b	0.404805116	0.176302319	0.176302319	4684	26568	26568	?b
+?a  associates  ?f  ?b  covaries  ?f   => ?a  associates  ?b	0.024716787	0.010961599	0.045008656	312	28463	6932	?b
+?f  associates  ?b  ?a  resembles  ?f   => ?a  associates  ?b	0.205260239	0.07199022	0.07199022	2591	35991	35991	?b
+?e  associates  ?b  ?e  resembles  ?a   => ?a  associates  ?b	0.200744672	0.065366558	0.065366558	2534	38766	38766	?b
+?e  treats  ?a  ?e  upregulates  ?b   => ?a  associates  ?b	0.04380892	0.02506118	0.058382601	553	22066	9472	?b
+?e  palliates  ?a  ?e  upregulates  ?b   => ?a  associates  ?b	0.007684386	0.028124094	0.057841383	97	3449	1677	?b
+?e  downregulates  ?b  ?e  palliates  ?a   => ?a  associates  ?b	0.008159708	0.026984543	0.061899038	103	3817	1664	?b
+?e  downregulates  ?b  ?e  treats  ?a   => ?a  associates  ?b	0.038184267	0.02184257	0.052277657	482	22067	9220	?b
+?e  binds  ?b  ?e  palliates  ?a   => ?a  associates  ?b	0.017666165	0.087519623	0.111055777	223	2548	2008	?b
+?e  binds  ?b  ?e  treats  ?a   => ?a  associates  ?b	0.040560881	0.094186902	0.14365881	512	5436	3564	?b
+?a  associates  ?e  ?e  covaries  ?b   => ?a  associates  ?b	0.024399905	0.011140046	0.041447988	308	27648	7431	?b
+?a  associates  ?f  ?b  interacts  ?f   => ?a  associates  ?b	0.351105126	0.048562944	0.077577455	4432	91263	57130	?b
+?a  associates  ?e  ?e  interacts  ?b   => ?a  associates  ?b	0.405291927	0.027462116	0.06288566	5116	186293	81354	?b
+?a  associates  ?f  ?b  regulates  ?f   => ?a  associates  ?b	0.318545512	0.022835433	0.048953603	4021	176086	82139	?b
+?a  associates  ?f  ?f  regulates  ?b   => ?a  associates  ?b	0.231719876	0.018254325	0.044886058	2925	160236	65165	?b
+?a  covaries  ?f  ?b  covaries  ?f   => ?a  covaries  ?b	0.433684552	0.022825366	0.025276942	26754	1172117	1058435	?b
+?f  covaries  ?b  ?a  covaries  ?f   => ?a  covaries  ?b	0.438158535	0.040776119	0.040776119	27030	662888	662888	?b
+?e  covaries  ?a  ?e  covaries  ?b   => ?a  covaries  ?b	0.428691846	0.019945697	0.019945697	26446	1325900	1325900	?b
+?f  causes  ?b  ?a  resembles  ?f   => ?a  causes  ?b	0.366298653	0.171133154	0.171133154	50895	297400	297400	?b
+?e  causes  ?b  ?e  resembles  ?a   => ?a  causes  ?b	0.364089129	0.174900947	0.174900947	50588	289238	289238	?b
+?a  resembles  ?f  ?f  upregulates  ?b   => ?a  upregulates  ?b	0.032364177	0.058978718	0.058978718	4024	68228	68228	?b
+?b  covaries  ?f  ?a  upregulates  ?f   => ?a  upregulates  ?b	0.16820686	0.105122418	0.12051053	20914	198949	173545	?b
+?b  covaries  ?f  ?a  expresses  ?f   => ?a  upregulates  ?b	0.282888969	0.08243337	0.093456479	35173	426684	376357	?b
+?b  covaries  ?f  ?a  downregulates  ?f   => ?a  upregulates  ?b	0.159134596	0.096176935	0.109844721	19786	205725	180127	?b
+?a  binds  ?f  ?f  regulates  ?b   => ?a  upregulates  ?b	0.025672578	0.016498085	0.016742371	3192	193477	190654	?b
+?e  treats  ?a  ?e  upregulates  ?b   => ?a  upregulates  ?b	0.001986569	0.011193692	0.011193692	247	22066	22066	?b
+?e  palliates  ?a  ?e  upregulates  ?b   => ?a  upregulates  ?b	0.00028954	0.010437808	0.010437808	36	3449	3449	?b
+?e  resembles  ?a  ?e  upregulates  ?b   => ?a  upregulates  ?b	0.031752926	0.053453201	0.053453201	3948	73859	73859	?b
+?e  localizes  ?a  ?e  upregulates  ?b   => ?a  upregulates  ?b	0.035436522	0.024496967	0.024496967	4406	179859	179859	?b
+?e  associates  ?b  ?e  localizes  ?a   => ?a  upregulates  ?b	0.069658584	0.027514367	0.029463192	8661	314781	293960	?b
+?e  downregulates  ?b  ?e  treats  ?a   => ?a  upregulates  ?b	0.00245305	0.013821543	0.014063076	305	22067	21688	?b
+?e  covaries  ?b  ?a  downregulates  ?e   => ?a  upregulates  ?b	0.162255198	0.103167014	0.114694729	20174	195547	175893	?b
+?e  covaries  ?b  ?a  upregulates  ?e   => ?a  upregulates  ?b	0.175437327	0.112384269	0.124938427	21813	194093	174590	?b
+?e  covaries  ?b  ?a  expresses  ?e   => ?a  upregulates  ?b	0.293915631	0.086487715	0.095611109	36544	422534	382215	?b
+?e  downregulates  ?b  ?e  localizes  ?a   => ?a  upregulates  ?b	0.040398922	0.028195024	0.03055929	5023	178152	164369	?b
+?a  expresses  ?f  ?b  interacts  ?f   => ?a  upregulates  ?b	0.411935497	0.086221525	0.091782773	51218	594028	558035	?b
+?b  interacts  ?f  ?a  upregulates  ?f   => ?a  upregulates  ?b	0.32484015	0.106039046	0.112056265	40389	380888	360435	?b
+?a  downregulates  ?f  ?b  interacts  ?f   => ?a  upregulates  ?b	0.291269554	0.086776394	0.092033739	36215	417337	393497	?b

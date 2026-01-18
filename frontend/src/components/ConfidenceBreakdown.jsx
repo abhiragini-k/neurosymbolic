@@ -100,7 +100,7 @@ const ConfidenceBreakdown = ({ drugId, diseaseId }) => {
                             <BeakerIcon className="w-4 h-4" />
                             <span className="text-xs font-bold uppercase tracking-wide">Pathway</span>
                         </div>
-                        <span className="text-xs font-bold">{Math.round(pathway * 100)}% (Raw)</span>
+                        <span className="text-xs font-bold">{Math.round(norm_pathway * 100)}%</span>
                     </div>
                     <div className="w-full bg-gray-200 h-1.5 rounded-full overflow-hidden">
                         <div className="h-full bg-blue-500 rounded-full" style={{ width: `${norm_pathway * 100}%` }}></div>

@@ -1,0 +1,7 @@
+# Python Cache
+__pycache__/
+*.py[cod]
+
+# Virtual Environments
+venv/
+env/

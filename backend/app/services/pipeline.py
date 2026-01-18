@@ -4,6 +4,7 @@ import json
 import numpy as np
 import asyncio
 from typing import Dict, Any, List
+from app import utils
 
 try:
     import torch
@@ -200,8 +201,20 @@ def perform_polo_analysis(drug_id: str, disease_id: str):
         # CAPTURE STDOUT
         f_buffer = io.StringIO()
         with redirect_stdout(f_buffer):
+            # Ensure inputs are names if possible (Best for Polo)
+            p_drug = drug_id
+            p_disease = disease_id
+            
+            if drug_id.isdigit():
+                 n = utils.drug_id_to_name(drug_id)
+                 if n: p_drug = n
+            
+            if disease_id.isdigit():
+                 n = utils.disease_id_to_name(disease_id)
+                 if n: p_disease = n
+
             # Pass write_file=False to avoid race condition
-            found_paths = polo_agent.explain(drug_id, disease_id, write_file=False)
+            found_paths = polo_agent.explain(p_drug, p_disease, write_file=False)
             
         result["stdout"] = f_buffer.getvalue()
         result["paths"] = found_paths
@@ -394,11 +407,11 @@ def get_confidence_breakdown(drug_id: str, disease_id: str) -> Dict[str, Any]:
             print(f"Similarity calc error: {e}")
 
     # --- NEW SCORING LOGIC (Weighted + Normalized) ---
-    MAX_PATHWAY_SCORE = 0.0056
-    W_PATHWAY = 0.05
-    W_GENE = 0.60
-    W_EMBEDDING = 0.30
-    W_RULE = 0.05
+    MAX_PATHWAY_SCORE = 0.035
+    W_EMBEDDING = 0.35
+    W_GENE = 0.35
+    W_PATHWAY = 0.15
+    W_RULE = 0.15
 
     avg_sim = similarity_score 
     avg_rule = rule_score 

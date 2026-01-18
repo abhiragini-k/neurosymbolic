@@ -1,46 +1,27 @@
-# Python
+# Python Cache
 __pycache__/
 *.py[cod]
-*$py.class
-*.so
-
-# Distribution / Packaging
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-share/python-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
 
 # Virtual Environments
 venv/
 env/
-ENV/
+
+# Secrets
 .env
 
-# Jupyter Notebooks
-.ipynb_checkpoints
+# Logs
+*.log
 
-# IDEs
+# IDE & System
 .vscode/
 .idea/
-
-# Operating System
 .DS_Store
 Thumbs.db
 
-# Project specific
-data/
+# Project Data (Large Files)
+data/*
+!data/.gitkeep
 *.pt
+*.pkl
 *.csv
+*.bz2

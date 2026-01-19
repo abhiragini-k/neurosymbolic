@@ -24,24 +24,24 @@ def compute_gene_match(drug_id: str, disease_id: str):
     matches = []
     
     for gene in target_genes:
-        # Mock drug effect: 1 (up), -1 (down), 0 (neutral)
-        # Weighted slightly towards non-neutral for interest
-        drug_effect = random.choices([1, -1, 0], weights=[0.4, 0.4, 0.2])[0]
+        # Mock drug effect: 1 (up), -1 (down)
+        # Weighted towards non-neutral
+        drug_effect = random.choices([1, -1], weights=[0.5, 0.5])[0]
         
-        # Mock disease signature: 1 (up), -1 (down), 0 (neutral)
-        disease_sig = random.choices([1, -1, 0], weights=[0.4, 0.4, 0.2])[0]
+        # Mock disease signature: 1 (up), -1 (down)
+        disease_sig = random.choices([1, -1], weights=[0.5, 0.5])[0]
         
-        # TEMP MOCK RULE:
-        # If both drug and disease effect are the same -> score = random(0.7-1.0)
-        # If opposite -> score = random(0.0-0.3)
-        if drug_effect == disease_sig and drug_effect != 0:
-             # Same direction (both up or both down) -> Good Match
+        # TEMP MOCK RULE (Biologically Correct):
+        # If opposite direction -> Reversal -> Good Match (Score 0.7-1.0)
+        # If same direction -> Exacerbates/No help -> Conflict (Score 0.0-0.3)
+        if drug_effect == -disease_sig:
+             # Opposite direction (Reversal) -> Good Match
              score = random.uniform(0.7, 1.0)
-        elif drug_effect == -disease_sig and drug_effect != 0:
-             # Opposite direction -> Conflict
+        elif drug_effect == disease_sig:
+             # Same direction -> Conflict
              score = random.uniform(0.0, 0.3)
         else:
-             # Mixed/Neutral -> Partial
+             # Should not happen with binary choice, but fallback covers it
              score = random.uniform(0.3, 0.7)
              
         matches.append({
